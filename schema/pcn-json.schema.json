@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shinagaki/pcn/schema/pcn-json.schema.json",
+  "title": "PCN-JSON",
+  "description": "JSON representation of a PCN (Portable Curling Notation) file, one-to-one with the text form. See spec/PCN_SPEC.md §7.",
+  "type": "object",
+  "required": ["pcn", "tags", "ends"],
+  "properties": {
+    "pcn": { "type": "string", "const": "1.0" },
+    "tags": {
+      "type": "object",
+      "description": "Header tags. Unknown keys are preserved.",
+      "required": ["Red", "Yellow"],
+      "additionalProperties": { "type": "string" }
+    },
+    "ends": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/end" }
+    }
+  },
+  "$defs": {
+    "side": { "type": "string", "enum": ["R", "Y"] },
+    "stone": {
+      "type": "array",
+      "description": "[side, x, y] in metres from the tee (+x thrower's right, +y toward the thrower). An optional fourth element true marks the thrown stone (*).",
+      "prefixItems": [{ "$ref": "#/$defs/side" }, { "type": "number" }, { "type": "number" }, { "type": "boolean" }],
+      "minItems": 3,
+      "maxItems": 4
+    },
+    "board": { "type": ["array", "null"], "items": { "$ref": "#/$defs/stone" } },
+    "shot": {
+      "type": "object",
+      "required": ["no", "side", "task"],
+      "properties": {
+        "no": { "type": "integer", "minimum": 1 },
+        "side": { "$ref": "#/$defs/side" },
+        "task": { "type": "string", "enum": ["D", "F", "G", "R", "W", "Z", "T", "H", "C", "S", "P", "-", "X", "?"] },
+        "handle": { "type": ["string", "null"], "enum": [">", "<", null] },
+        "points": { "type": ["integer", "null"], "minimum": 0, "maximum": 4 },
+        "nag": { "type": "string", "description": "Annotation such as !, !!, ?, ??, !?, ?!" },
+        "player": { "type": ["integer", "null"], "minimum": 1, "maximum": 4 },
+        "split": { "type": ["number", "null"], "description": "t= hog-to-hog time in seconds" },
+        "interval": { "type": ["number", "null"], "description": "i= interval time in seconds" },
+        "clock": { "type": ["string", "null"], "description": "clock= remaining thinking time MM:SS" },
+        "board": { "$ref": "#/$defs/board" },
+        "v": {
+          "type": ["array", "null"],
+          "description": "[x, y, vx, vy, w] release state (layer 4). Meaningful only with the Engine tag.",
+          "prefixItems": [{ "type": "number" }, { "type": "number" }, { "type": "number" }, { "type": "number" }, { "type": "number" }],
+          "minItems": 5,
+          "maxItems": 5
+        },
+        "est": { "type": "boolean", "description": "true when v was reconstructed rather than measured" },
+        "x": { "type": ["string", "null"], "enum": ["fgz", "notick", "hog", "burn", "reposition", "wrong", null] },
+        "comment": { "type": "string" },
+        "extra": { "type": "object", "description": "Unknown key=value fields, preserved", "additionalProperties": { "type": "string" } }
+      }
+    },
+    "score": {
+      "type": ["object", "null"],
+      "description": "End score. null when the end is undecided (in progress). X in the text form becomes null per side.",
+      "properties": {
+        "red": { "type": ["integer", "null"], "minimum": 0 },
+        "yellow": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "end": {
+      "type": "object",
+      "required": ["no", "shots"],
+      "properties": {
+        "no": { "type": "integer", "minimum": 1 },
+        "hammer": { "type": ["string", "null"], "enum": ["R", "Y", null] },
+        "powerplay": { "type": ["string", "null"], "enum": ["R", "Y", null] },
+        "clockR": { "type": ["string", "null"] },
+        "clockY": { "type": ["string", "null"] },
+        "thrown": { "type": ["array", "null"], "description": "Scenario attribute thrown=R-Y", "prefixItems": [{ "type": "integer" }, { "type": "integer" }], "minItems": 2, "maxItems": 2 },
+        "scoreAtStart": { "type": ["array", "null"], "description": "Scenario attribute score=R-Y", "prefixItems": [{ "type": "integer" }, { "type": "integer" }], "minItems": 2, "maxItems": 2 },
+        "setup": { "$ref": "#/$defs/board" },
+        "shots": { "type": "array", "items": { "$ref": "#/$defs/shot" } },
+        "score": { "$ref": "#/$defs/score" },
+        "comment": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+; A study position: the last end of a game cut out at the 14th stone, without the earlier throws.
+; thrown=7-6 means the first team (R) has thrown 7 stones and the hammer team (Y) 6; score=5-3 is the score entering the end (the hammer team is two down).
+; The board below is the position before the 14th stone. Positions are fictional.
+[PCN "1.0"]
+[Event "Study: two down with hammer, three stones left"]
+[Red "Red"]
+[Yellow "Yellow"]
+[Ends "10"]
+[LSFE "Yellow"]
+[Result "*"]
+
+End 10 hammer=Y thrown=7-6 score=5-3
+Setup
+@ R0.10,0.30* R-0.60,1.90 R0.95,-0.40 Y-0.40,1.20 Y0.35,-0.50 Y0.02,3.40

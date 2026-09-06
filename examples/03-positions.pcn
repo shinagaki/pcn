@@ -1,0 +1,29 @@
+; Layer 3: an @ line after each shot with the position of every stone in play.
+; Coordinates are metres from the tee of the playing end, +x to the thrower's right, +y toward the thrower.
+; A trailing * marks the thrown stone where it came to rest. Positions are fictional.
+[PCN "1.0"]
+[Event "Example"]
+[Date "2026.??.??"]
+[Red "Red"]
+[Yellow "Yellow"]
+[Ends "8"]
+[LSFE "Red"]
+[Result "*"]
+
+End 1 hammer=R
+1 Y F>4
+@ Y-0.02,3.61*
+2 R D>4
+@ Y-0.02,3.61 R0.08,0.41*
+3 Y T<4
+@ Y-0.02,3.61 Y0.31,-0.55*
+4 R D<3
+@ Y-0.02,3.61 Y0.31,-0.55 R-0.45,0.20*
+5 Y G>4
+@ Y-0.02,3.61 Y0.31,-0.55 R-0.45,0.20 Y-0.40,2.90*
+6 R H<3
+@ Y-0.02,3.61 R-0.45,0.20 Y-0.40,2.90 R0.62,-0.30*
+7 Y - ; deliberate through, nothing touched
+@ Y-0.02,3.61 R-0.45,0.20 Y-0.40,2.90 R0.62,-0.30
+8 R C>4
+@ R-0.45,0.20 Y-0.40,2.90 R0.62,-0.30

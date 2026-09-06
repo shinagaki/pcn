@@ -1,0 +1,27 @@
+; Layer 1 only: a line score with no shot lines. Scores are fictional.
+[PCN "1.0"]
+[Event "Example Invitational"]
+[Site "Karuizawa, JPN"]
+[Date "2026.??.??"]
+[Red "Red Rocks"]
+[Yellow "Yellow Hammers"]
+[Ends "8"]
+[LSFE "Red"]
+[Result "6-4"]
+
+End 1 hammer=R
+Score 1-0
+End 2
+Score 0-2
+End 3
+Score 0-0
+End 4
+Score 2-0
+End 5
+Score 0-1
+End 6
+Score 1-0
+End 7
+Score 0-1
+End 8
+Score 2-0

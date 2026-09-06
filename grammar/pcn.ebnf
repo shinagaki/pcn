@@ -1,0 +1,20 @@
+
+file      = { line } ;
+line      = tag | end | score | setup | shot | board | comment | empty ;
+tag       = "[" key WS string "]" ;
+end       = "End" WS int { WS kv } ;
+score     = "Score" WS ( "X" | num "-" num ) ;          (* num は int または "X" *)
+setup     = "Setup" ;
+shot      = int [ WS side ] WS shotspec { WS ( kv | "est" ) } ;
+board     = "@" { WS stone } ;
+stone     = side coord "," coord [ "*" ] ;              (* 末尾 * = 場内に残った投球石 *)
+side      = "R" | "Y" ;
+shotspec  = task [ handle ] [ points ] { nag } | "-" | "X" ;
+task      = "D"|"F"|"G"|"R"|"W"|"Z"|"T"|"H"|"C"|"S"|"P"|"?" ;   (* "?" = 種別未指定 *)
+handle    = ">" | "<" ;
+points    = "0"|"1"|"2"|"3"|"4" ;
+nag       = "!" | "?" ;
+kv        = key "=" value ;                                (* value に空白は含まない *)
+comment   = ";" { any } ;
+
+行末の `; コメント` はどの行にも付けられます。大文字小文字は区別します。

@@ -1,0 +1,48 @@
+; Mixed doubles: Format, 5 stones per team, pre-positioned stones written with Setup, and a power play.
+; Throwing order is 1-2-2-2-1 (the player who throws the first stone also throws the last). Positions are fictional.
+[PCN "1.0"]
+[Event "Example Mixed Doubles"]
+[Date "2026.??.??"]
+[Format "MixedDoubles"]
+[Red "Red Pair"]
+[Yellow "Yellow Pair"]
+[RedPlayers "AOKI M; AOKI K"]
+[YellowPlayers "SATO R; SATO H"]
+[Ends "8"]
+[Stones "5"]
+[LSFE "Yellow"]
+[Result "*"]
+
+; The hammer team's pre-positioned stone sits in the house, the other team's stone is the centre guard.
+End 1 hammer=Y
+Setup
+@ R0.00,3.50 Y0.00,0.30
+1 R D<4
+@ R0.00,3.50 Y0.00,0.30 R-0.35,0.45*
+2 Y T>3
+@ R0.00,3.50 Y0.00,0.30 Y0.55,-0.20*
+3 R D>4
+@ R0.00,3.50 Y0.00,0.30 Y0.55,-0.20 R-0.10,-0.40*
+4 Y H<2
+@ R0.00,3.50 Y0.55,-0.20 R-0.10,-0.40 Y0.90,-0.90*
+5 R G<4
+@ R0.00,3.50 Y0.55,-0.20 R-0.10,-0.40 Y0.90,-0.90 R-0.40,2.60*
+6 Y D>3
+@ R0.00,3.50 Y0.55,-0.20 R-0.10,-0.40 Y0.90,-0.90 R-0.40,2.60 Y0.20,-0.10*
+7 R T<4
+@ R0.00,3.50 Y0.55,-0.20 R-0.10,-0.40 Y0.90,-0.90 R-0.40,2.60 R0.30,-0.35*
+8 Y S<2
+@ R0.00,3.50 R-0.10,-0.40 Y0.90,-0.90 R-0.40,2.60 Y0.75,-0.60*
+9 R D>4
+@ R0.00,3.50 R-0.10,-0.40 Y0.90,-0.90 R-0.40,2.60 Y0.75,-0.60 R0.05,-0.05*
+10 Y D<1 ; light, short of the house
+@ R0.00,3.50 R-0.10,-0.40 Y0.90,-0.90 R-0.40,2.60 Y0.75,-0.60 R0.05,-0.05 Y0.15,2.20*
+Score 2-0
+
+; Red stole two, so yellow keeps the hammer. The team with the hammer may call a power play once per game:
+; the pre-positioned stones move to the side of the sheet.
+End 2 hammer=Y powerplay=Y
+Setup
+@ R1.20,3.20 Y1.35,0.60
+1 R D<3
+@ R1.20,3.20 Y1.35,0.60 R1.05,0.95*

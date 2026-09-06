@@ -1,0 +1,101 @@
+; Irregular situations. Two rules: the result is written as an @ board; the reason goes in x= or a comment.
+; This game was stopped on the event's time limit after end 6 (Termination "Stopped"). Everything is fictional.
+[PCN "1.0"]
+[Event "Example Club Bonspiel"]
+[Date "2026.??.??"]
+[Red "Red"]
+[Yellow "Yellow"]
+[Ends "8"]
+[FGZ "5"]
+[NoTick "true"]
+[LSFE "Yellow"]
+[Result "5-4"]
+[Termination "Stopped"]
+[Timeout "R E3 before 9"]
+
+End 1 hammer=Y
+1 R F>4
+@ R0.05,3.42*
+2 Y F<4
+@ R0.05,3.42 Y-0.60,3.10*
+3 R T>0 x=fgz ; removed the yellow guard before the 6th stone: guard restored, shooter removed
+@ R0.05,3.42 Y-0.60,3.10
+4 Y W<2 x=notick ; ticked the red centre guard off the centre line; red chose to restore it, shooter removed
+@ R0.05,3.42 Y-0.60,3.10
+5 R D>3
+@ R0.05,3.42 Y-0.60,3.10 R-0.21,0.88*
+6 Y T<4 ; sixth stone: guards are no longer protected
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60*
+7 R G>4
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60 R-0.30,2.70*
+8 Y T>0 x=hog ; hog line violation, stone removed
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60 R-0.30,2.70
+9 R D>3
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60 R-0.30,2.70 R0.50,0.60*
+10 Y X x=burn ; the yellow stone was touched by a sweeper in motion; red chose to leave everything as it lay
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60 R-0.30,2.70 R0.50,0.60 Y0.80,1.40*
+11 R T<4
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60 R-0.30,2.70 R0.50,0.60 R1.10,0.90*
+12 Y S<3
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60 R-0.30,2.70 Y0.40,-0.50*
+13 R D>4
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60 R-0.30,2.70 Y0.40,-0.50 R0.02,0.10*
+14 Y T>2 x=reposition ; a stone was displaced by a broom after coming to rest; the umpire replaced it
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60 R-0.30,2.70 Y0.40,-0.50 Y-0.35,0.25*
+15 R D<4
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60 R-0.30,2.70 Y0.40,-0.50 Y-0.35,0.25 R0.10,0.20*
+16 Y D<2 ; light
+@ Y-0.60,3.10 R-0.21,0.88 Y0.40,3.60 R-0.30,2.70 Y0.40,-0.50 Y-0.35,0.25 R0.10,0.20 Y0.25,1.10*
+Score 1-0
+
+End 2 hammer=Y
+1 R F>4
+2 Y F<4
+3 R D>4
+4 Y T<3
+5 R D<2
+6 Y D>4
+7 R T<4
+8 Y H>3
+9 R S<4
+10 Y D>3
+11 R D<4
+12 Y T>4
+13 R D>3
+14 Y D<4
+15 R T<3
+16 Y D>4
+Score 0-2
+
+End 3 hammer=R
+1 Y F>4
+2 R D>3
+3 Y D<4
+4 R T<3
+5 Y G>4
+6 R D>2
+7 Y T<4
+8 R H>3
+9 Y D>3 ; time-out (red) before this stone
+10 R S<2
+11 Y D<4
+12 R T>3
+13 Y D>2
+14 R D<4
+15 Y T<3
+16 R D>4
+Score 2-0
+
+End 4 hammer=Y
+Score 0-2
+
+End 5 hammer=R
+Score 2-0
+
+End 6 hammer=Y ; the event's 2-hour time limit was reached during this end; game stopped, 5-4 stands
+Score 0-0
+
+End 7
+Score X
+End 8
+Score X

@@ -1,0 +1,57 @@
+; Layer 2: task, rotation and rating for every stone (the form of a World Curling Shot by Shot record).
+; End 1 is the real JPN-POL end from the 2026 World Men's Championship used in the specification; the rest is fictional.
+[PCN "1.0"]
+[Event "LGT World Men's Curling Championship 2026"]
+[Site "Ogden, UT, USA"]
+[Date "2026.04.02"]
+[Stage "Round Robin Session 18"]
+[Sheet "A"]
+[Red "JPN - Japan"]
+[Yellow "POL - Poland"]
+[RedPlayers "KOIZUMI S; USUI S; YAMAGUCHI T; YANAGISAWA R"]
+[YellowPlayers "LOBAZA B; CIEMINSKI M; DOMIN K; STYCH K"]
+[Ends "10"]
+[LSFE "Red"]
+[Result "5-0"]
+[Termination "Concede"]
+
+End 1 hammer=R clockR=34:10 clockY=33:52
+1 Y F>4
+2 R D>4
+3 Y D>2
+4 R D<4
+5 Y D<2
+6 R T<3
+7 Y S<2
+8 R H>3
+9 Y H>4
+10 R T<2
+11 Y D<3
+12 R H<4
+13 Y P>1
+14 R H>3
+15 Y S<2
+16 R D<4 t=13.9 ; last stone, draw for three
+Score 3-0
+
+End 2 hammer=Y
+1 R F>4
+2 Y D<4
+3 R G>3
+4 Y T<4
+5 R D<3
+6 Y T>4
+7 R Z<2
+8 Y H<3
+9 R T>4
+10 Y D>2
+11 R S<4!
+12 Y D<3
+13 R T>4
+14 Y D>1
+15 R T<4
+16 Y D>0?? ; heavy, through the house
+Score 2-0
+; Poland conceded after end 2 (Termination "Concede"). Ends 3-10 were not played:
+End 3
+Score X
