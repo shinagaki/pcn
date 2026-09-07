@@ -12,7 +12,7 @@ Rules and statistical symbols follow the public material of World Curling / CURL
 - MIME: `text/x-pcn`.
 - The specification does not depend on any particular implementation. Layers ①–③ are a common language that lets any processor follow the same board; only layer ④ (`v=`) is engine-specific (§10).
 - License: this specification is published under **CC BY 4.0** ([Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)). Implement, quote and redistribute freely with attribution. Implementations based on it choose their own license.
-- Latest version: <https://curlflux.creco.net/docs/PCN_SPEC.md> (Japanese) / <https://curlflux.creco.net/docs/PCN_SPEC.en.md> (this edition).
+- Latest version: <https://github.com/shinagaki/pcn> (spec, grammar, JSON schema, examples; the Japanese [PCN_SPEC.md](PCN_SPEC.md) is normative). The copies under <https://curlflux.creco.net/docs/> are mirrors of the same content.
 
 ## 1. Design principles
 
