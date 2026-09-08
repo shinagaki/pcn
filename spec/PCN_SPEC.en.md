@@ -92,7 +92,7 @@ One `[Key "Value"]` per line. Inside a value, `"` is written `\"` and `\` is wri
 | `Time` | | Start time `HH:MM` in **venue local time** (World Curling records are local). Infer the time zone from `Site`. Add `TZ` (e.g. `"+09:00"`) only if you need UTC |
 | `Stage` | | Round / session (e.g. `"Round Robin Session 18"`, `"Final"`) |
 | `Sheet` | | Sheet name |
-| `RedPlayers` / `YellowPlayers` | | In throwing order, `;`-separated (lead; second; third; fourth). Function after the name: `(S)` skip / `(V)` vice-skip (also used when the skip does not throw fourth). With three players write three names (the first two throw three stones each, the third two — World Curling R3(c)(i)). Mixed doubles: two names |
+| `RedPlayers` / `YellowPlayers` | | In throwing order, `;`-separated (lead; second; third; fourth). **By default the third player is the vice-skip and the fourth (last) is the skip.** A function is written after the name only when it differs from that default — `(S)` skip / `(V)` vice-skip (e.g. a skip who throws third). With three players write three names (the first two throw three stones each, the third two — World Curling R3(c)(i)). Mixed doubles: two names |
 | `RedShort` / `YellowShort` | | Abbreviation (`JPN` etc., 3–4 letters) |
 | `RedColor` / `YellowColor` | | Display colour (`#rrggbb`) |
 | `RedCoach` / `YellowCoach` | | Coaches, `;`-separated |
