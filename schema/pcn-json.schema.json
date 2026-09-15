@@ -39,8 +39,8 @@
         "points": { "type": ["integer", "null"], "minimum": 0, "maximum": 4 },
         "nag": { "type": "string", "description": "Annotation such as !, !!, ?, ??, !?, ?!" },
         "player": { "type": ["integer", "null"], "minimum": 1, "maximum": 4 },
-        "split": { "type": ["number", "null"], "description": "t= hog-to-hog time in seconds" },
-        "interval": { "type": ["number", "null"], "description": "i= interval time in seconds" },
+        "hogToHog": { "type": ["number", "null"], "description": "t= hog-to-hog time in seconds (hog line to hog line, 21.945 m)" },
+        "backLineToHog": { "type": ["number", "null"], "description": "i= split time in seconds (delivery-end back line to hog line, 8.230 m)" },
         "clock": { "type": ["string", "null"], "description": "clock= remaining thinking time MM:SS" },
         "board": { "$ref": "#/$defs/board" },
         "v": {

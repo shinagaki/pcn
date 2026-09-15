@@ -147,8 +147,8 @@ Score <red>-<yellow>
 | side | `R` / `Y` | If omitted, **the non-hammer team throws first**, then alternate. Write it only when the order was irregular (e.g. a throwing-order violation) |
 | shot | `<Task><Handle><Points><annotation>` | See below. `-` and `X` stand alone as Task |
 | `p=` | `1`–`4` | Thrower: index into the `Players` tag (1-based). Default is the regular order (two stones each) |
-| `t=` | seconds | Hog-to-hog time (split), e.g. `t=12.7` |
-| `i=` | seconds | Interval time (back line to hog) |
+| `t=` | seconds | Hog-to-hog time (hog line to hog line, 21.945 m): how fast the stone travels on the ice, which describes the ice, e.g. `t=12.7` |
+| `i=` | seconds | Split time (delivery-end back line to hog line, 8.230 m): measured during the delivery, it gives the thrower's release weight, e.g. `i=3.7` |
 | `clock=` | `MM:SS` | Thinking time left after the shot |
 | `v=` | `x,y,vx,vy,w` | ④ motion (§5.2) |
 | `est` | flag | `v=` is not a measurement but an estimate generated from ② / ③ |
@@ -364,7 +364,7 @@ For program-to-program exchange, a JSON form maps one-to-one to the text.
       "setup": null,
       "shots": [
         { "no": 1, "side": "Y", "task": "F", "handle": ">", "points": 4,
-          "player": 1, "split": null, "board": [["Y", 0.05, 3.42]],
+          "player": 1, "hogToHog": null, "board": [["Y", 0.05, 3.42]],
           "v": null, "est": false, "nag": "", "comment": "" }
       ],
       "score": { "red": 3, "yellow": 0 }
