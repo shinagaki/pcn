@@ -250,12 +250,17 @@ Two principles: **outcomes are expressed by the `@` board** (which can represent
 |---|---|---|
 | `x=fgz` | Protected-stone violation (four-player: an opponent FGZ stone put out of play before the 6th stone; mixed doubles: any stone, own or opponent, put out of play before the 4th stone) | Moved stones returned, shooter removed. If the `FGZ` rule is in effect the player detects and restores it automatically, so `@` may be omitted |
 | `x=notick` | No-tick violation (an opponent FGZ stone on the centre line moved off the line; not in mixed doubles or wheelchair) | The non-offending team chooses (restore / leave). Write the chosen result in `@` |
-| `x=hog` | Hog-line violation (late release) | Shooter removed (not written in `@`) |
+| `x=hog` | Hog-line violation (late release), and a stone that did not reach the hog line | Shooter removed (not written in `@`) |
 | `x=burn` | Burned stone (touched while moving) | The opponent's choice (leave / restore / remove) reflected in `@`. Details in a `; comment` |
 | `x=reposition` | Stones repositioned by an umpire | The repositioned board in `@` |
 | `x=wrong` | Wrong stone or wrong order | Result of the ruling in `@`; details in a comment |
 
 Example: `5 R T<0 x=fgz ; opponent centre guard removed → restored`, followed by the post-ruling `@`.
+
+`x=hog` covers two cases that the rules treat differently: a violation (late release) and a missed shot (a stone that did not reach the hog line and
+was removed). In both the only outcome is that the shooter is removed, and Shot by Shot records do not separate them, so PCN uses one code. Write the
+difference in a `; comment` when it matters (e.g. `1 R D>0 x=hog ; did not reach the hog line`). A player may show the shooter stopping short of the
+hog line and being removed (without the code, a shooter that vanished without changing the board cannot be told apart from a through).
 
 **Game-level termination and forfeits** (`Termination` tag):
 
@@ -269,6 +274,10 @@ The value only says **how the game closed**, in four ways. **The reason is not i
 | `Forfeit` | Decided by something other than play (no-show, disqualification, out of time) | The `Result` tag |
 
 - With `Concede` / `Stopped` / `Forfeit`, unplayed ends are written `Score X` (neither team threw) or `Score 2-X`. `Result` carries the deciding score.
+- **The score of a conceded end** follows World Curling's rule R12(h). If both teams still have stones to deliver, write `X`. If only one team has delivered
+  all its stones and the team that still has stones to deliver has stone(s) counting, write those points (e.g. the hammer team counts one with its last stone
+  still to come → `Score 0-1`). If the team that delivered all its stones is counting, or no stone is counting, write `X`. When the game has an official
+  record, write the official score as it is (World Curling records include cases where the team that delivered all its stones was given its points).
 - Example of a stop (an event time limit after end 7):
 
 ```
@@ -452,7 +461,7 @@ Primary material this specification follows. The specification is unofficial and
 
 | Content | Source |
 |---|---|
-| Rules of play (FGZ = R6, no-tick = R7, mixed doubles = R17, wheelchair = R14) | *The Rules of Curling and Rules of Competition*, World Curling, July 2024 ([list](https://worldcurling.org/rules/) / [PDF](https://worldcurling.org/wp-content/uploads/2024/08/Rules-2024.pdf)) |
+| Rules of play (score of a conceded end = R12(h), FGZ = R6, no-tick = R7, mixed doubles = R17, wheelchair = R14) | *The Rules of Curling and Rules of Competition*, World Curling, July 2024 ([list](https://worldcurling.org/rules/) / [PDF](https://worldcurling.org/wp-content/uploads/2024/08/Rules-2024.pdf)) |
 | Definitions of Task, Handle and Points | *Curling Statistics: How to Score*, © World Curling and CURLIT Ltd., 2025 ([PDF](https://curlit.com/powerpoint/StatsTraining_2025_2026.pdf)) |
 | Source data for layers ② and ③ (Shot by Shot, diagrams) | World Curling Live Scores (`livescores.worldcurling.org`) / CURLIT Results Books (`curlit.com`) |
 | History of the FGZ and national adoption dates | Curling Canada "History of Curling"; World Curling announcements (five-rock decision at the September 2017 Congress, 2022 no-tick trial) |

@@ -248,12 +248,17 @@ Anim R0 dur=2.4 0:0.10,30.8 0.5:0.30,4.0 0.8:0.55,0.8 1:0.45,-0.1
 |---|---|---|
 | `x=fgz` | 石を守るルールの違反（4人制は6投目の投球前に相手の FGZ 石を場外、ミックスダブルスは4投目の投球前に自他いずれかの石を場外）| 動かした石を戻し、投球石を除く。※ `FGZ` ルールが効くなら再生側が自動判定・復元するので `@` を省いても復元される |
 | `x=notick` | ノーティック違反（センターライン上の相手 FGZ 石をラインから外す。ミックスダブルス・車いすには無い） | 規則上は違反されなかった側の選択（戻す／そのまま）。`@` に選んだ結果を書く |
-| `x=hog` | ホッグライン違反（リリース遅れ） | 投球石を除く（`@` に投球石を書かない） |
+| `x=hog` | ホッグライン違反（リリース遅れ）と、ホッグラインに届かなかった石 | 投球石を除く（`@` に投球石を書かない） |
 | `x=burn` | バーンストーン（進行中に触れた） | 相手の選択（そのまま／戻す／除く）を `@` に反映。詳細は `; コメント` |
 | `x=reposition` | 審判による石の再配置 | 再配置後の位置を `@` に書く |
 | `x=wrong` | 誤ったストーン／順番の投球 | 処置結果を `@` に。詳細はコメント |
 
 例: `5 R T<0 x=fgz ; 相手センターガードを場外 → 復元` の後に処置後の `@`。
+
+`x=hog` は、規則上は違反（リリース遅れ）とミスショット（ホッグラインに届かず取り除かれた石）の2つを含みます。どちらも投球石が除かれるだけで、
+Shot by Shot の記録でも分けられないため、まとめて1つのコードにします。区別したいときは `; コメント` に書きます
+（例: `1 R D>0 x=hog ; ホッグラインに届かず除去`）。再生側は、投球石をホッグラインの手前で止めて取り除く動きにしてよい
+（何も書かないと、盤面を変えずに消えた投球石はハウスを抜けたスルーと区別できない）。
 
 **試合レベルの終了・不戦**（`Termination` タグ）:
 
@@ -267,6 +272,10 @@ Anim R0 dur=2.4 0:0.10,30.8 0.5:0.30,4.0 0.8:0.55,0.8 1:0.45,-0.1
 | `Forfeit` | 投球以外の理由で勝敗が決まった（不戦・失格・持ち時間切れ） | `Result` タグが正 |
 
 - `Concede` / `Stopped` / `Forfeit` では、投げなかったエンドは `Score X`（両者未投）または `Score 2-X` のように `X` で示します。`Result` には決着スコアを書きます。
+- **投了したエンドの得点**は World Curling の規則（R12(h)）に従います。両チームに投げる石が残っていれば `X`。一方だけが投げ終えていて、まだ投げる石が
+  残っている側の石が数えられるなら、その点を書きます（例: 後攻が最後の1投を残して1点を持っていた → `Score 0-1`）。投げ終えた側の石が数えられる・
+  数えられる石が無いときは `X`。ただし公式記録が付いている試合は、公式記録の得点をそのまま書きます（World Curling の記録には、投げ終えた側の石が
+  数えられる場合にも得点を付けた例がある）。
 - 打ち切りの例（大会の試合時間制限で第7エンドまで）:
 
 ```
@@ -450,7 +459,7 @@ End 3 hammer=R
 
 | 内容 | 資料 |
 |---|---|
-| 競技規則（FGZ = R6、ノーティック = R7、ミックスダブルス = R17、車いす = R14） | *The Rules of Curling and Rules of Competition*, World Curling, July 2024（[一覧](https://worldcurling.org/rules/) ／ [PDF](https://worldcurling.org/wp-content/uploads/2024/08/Rules-2024.pdf)） |
+| 競技規則（投了したエンドの得点 = R12(h)、FGZ = R6、ノーティック = R7、ミックスダブルス = R17、車いす = R14） | *The Rules of Curling and Rules of Competition*, World Curling, July 2024（[一覧](https://worldcurling.org/rules/) ／ [PDF](https://worldcurling.org/wp-content/uploads/2024/08/Rules-2024.pdf)） |
 | ショット種別（Task）・回転（Handle）・評価（Points）の定義 | *Curling Statistics: How to Score*, © World Curling and CURLIT Ltd., 2025（[PDF](https://curlit.com/powerpoint/StatsTraining_2025_2026.pdf)） |
 | ②③層の元データ（Shot by Shot・配置図） | World Curling Live Scores（`livescores.worldcurling.org`）／ CURLIT Results Book（`curlit.com`） |
 | FGZ の成立と各国の導入時期 | Curling Canada「History of Curling」、World Curling の年次発表（2017年9月総会の5ロック決定、2022年のノーティック試行） |
