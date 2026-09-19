@@ -37,6 +37,7 @@
 [PCN "1.0"]
 [Event "LGT World Men's Curling Championship 2026"]
 [Site "Ogden, UT, USA"]
+[Venue "Weber County Ice Sheet"]
 [Date "2026.04.02"]
 [Stage "Round Robin Session 18"]
 [Sheet "A"]
@@ -85,9 +86,10 @@ Score 2-0
 | `PCN` | ○ | 仕様バージョン。`"1.0"` |
 | `Red` / `Yellow` | ○ | チーム名。ストーンの色で識別する（WCF 方式）。色が違う場合も名目上 Red/Yellow を使い、`RedColor` 等で見た目を指定 |
 | `Event` | | 大会名 |
-| `Site` | | 開催地（都市, 国） |
+| `Site` | | 開催地（都市, 国。例 `"Ogden, UT, USA"`・`"北海道稚内市"`）。施設名は `Venue` に書く |
+| `Venue` | | 会場（施設名。例 `"Weber County Ice Sheet"`・`"軽井沢アイスパーク"`）。命名権で名前が変わる施設は、その試合の時点の呼称を書く |
 | `Date` | | `YYYY.MM.DD`（不明部分は `??`） |
-| `Time` | | 開始時刻 `HH:MM`。**会場ローカル時刻**（WCF の記録がローカル）。タイムゾーンは `Site` の会場から判断する。UTC で持ちたい場合のみ `TZ`（例 `"+09:00"`）を併記してよい |
+| `Time` | | 開始時刻 `HH:MM`。**会場ローカル時刻**（WCF の記録がローカル）。タイムゾーンは `Site`（開催地）から判断する。UTC で持ちたい場合のみ `TZ`（例 `"+09:00"`）を併記してよい |
 | `Stage` | | ラウンド／セッション（例: `"Round Robin Session 18"`, `"Final"`, `"準決勝"`） |
 | `Sheet` | | シート名 |
 | `RedPlayers` / `YellowPlayers` | | 投球順に `;` 区切り（リード; セカンド; サード; フォース）。**既定はサード（3番目）＝バイススキップ、フォース（4番目・最後）＝スキップ**。Function は既定から外れるときだけ名前の後ろに書く — `(S)`＝スキップ / `(V)`＝バイススキップ（例: スキップがサードを投げる編成）。3人でプレーするときは3名だけ書く（先の2人が3投ずつ、3人目が2投。WCF R3(c)(I)）。ミックスダブルスは2名 |
@@ -108,7 +110,7 @@ Score 2-0
 | `LSD` | | ラストストーンドロー `"Red 286.3; Yellow 199.6"`（cm。ハウス外は 199.6） |
 | `Result` | | 最終得点 `"Red-Yellow"`（例 `"5-0"`）。進行中・不明は `"*"` |
 | `Termination` | | 試合の閉じ方。`Normal`（規定エンドを投げ切った。既定）/ `Concede`（投了）/ `Stopped`（規定エンドを待たずに打ち切り）/ `Forfeit`（不戦・失格・持ち時間切れ）。**理由は値に入れず、最終エンドの行のコメントに自由記述で書く**（§4.6）|
-| `Timeout` | | タイムアウトの記録（任意）。`;` 区切りで「チーム・エンド・何投目の前か」を並べる。例 `"Y E6 before 5; R EE before 3"`。1試合で複数取れる（各チーム1エンド1回＋エクストラエンドで各もう1回）ので複数可。手早く済ますならショット行の `; time-out` コメントでもよい（§4.6） |
+| `Timeout` | | タイムアウトの記録（任意）。`;` 区切りで「チーム・エンド・そのチームの何投目の前か」を並べる（投目はエンドの通し番号ではなくチームごとに 1〜8、ミックスダブルスは 1〜5。Results Book の「CHN stone 8」と同じ数え方。エクストラエンドもエンド番号で書き、`EE` とも書ける）。例 `"Y E6 before 5; R E11 before 3"`。1試合で複数取れる（各チーム1エンド1回＋エクストラエンドで各もう1回）ので複数可。手早く済ますならショット行の `; time-out` コメントでもよい（§4.6） |
 | `Engine` | | ④層の運動量を再生する物理エンジン識別子。`名前/版` 形式（例 `"myengine/1"`）。運動量を書くときは必須 |
 | `Source` | | 出典（URL など） |
 | `Annotator` | | 記録者 |
@@ -485,7 +487,7 @@ End 3 hammer=R
 
 ## Quick reference (English)
 
-- Header tags `[Key "Value"]`: `PCN`, `Event`, `Site`, `Date` (YYYY.MM.DD), `Stage`, `Sheet`, `Red`, `Yellow`, `RedPlayers`/`YellowPlayers` (`;`-separated, throwing order), `Format` (Team|MixedDoubles|Wheelchair), `Ends`, `Stones`, `FGZ` (0|3|4|5, default by date **and format**), `NoTick` (true|false, default by date and format; never in mixed doubles or wheelchair), `ThinkingTime`, `SheetWidth` (m), `Ice` ("hh=<hog-to-hog seconds of a tee draw> curl=<metres>"), `LSFE` (Red|Yellow), `LSD`, `Result` ("r-y"), `Termination` (Normal|Concede|Stopped|Forfeit; the reason goes in the final end's comment), `Engine`, `Source`.
+- Header tags `[Key "Value"]`: `PCN`, `Event`, `Site` (city, country), `Venue` (building), `Date` (YYYY.MM.DD), `Stage`, `Sheet`, `Red`, `Yellow`, `RedPlayers`/`YellowPlayers` (`;`-separated, throwing order), `Format` (Team|MixedDoubles|Wheelchair), `Ends`, `Stones`, `FGZ` (0|3|4|5, default by date **and format**), `NoTick` (true|false, default by date and format; never in mixed doubles or wheelchair), `ThinkingTime`, `SheetWidth` (m), `Ice` ("hh=<hog-to-hog seconds of a tee draw> curl=<metres>"), `LSFE` (Red|Yellow), `LSD`, `Result` ("r-y"), `Termination` (Normal|Concede|Stopped|Forfeit; the reason goes in the final end's comment), `Engine`, `Source`.
 - Body: `End n [hammer=R|Y] [powerplay=R|Y] [clockR=MM:SS clockY=MM:SS]`, optional `Setup` + board line for pre-positioned stones, shot lines `n [R|Y] TASK[>|<][0-4][!?] [p=k] [t=sec] [v=x,y,vx,vy,w] [est] ; comment`, optional board line `@ Rx,y Yx,y ...` after a shot, `Score r-y` (X = unplayed).
 - Tasks follow the World Curling / CURLIT statisticians' codes: D Draw, F Front, G Guard, R Raise, W Wick/Split, Z Freeze, T Take-out, H Hit and Roll, C Clearing, S Double Take-out, P Promotion Take-out, `-` Through, `X` Not considered, `?` Unspecified (task not yet assigned; a reproducer fits without a task hint and may classify it from the board). Handle: `>` clockwise (in-turn), `<` counter-clockwise (out-turn). Points 0–4 = 0–100%.
 - Rules and statistics follow World Curling's *The Rules of Curling* (R6 FGZ, R7 no-tick, R17 mixed doubles) and the CURLIT statisticians' manual — see §11 for sources. This document is unofficial and not affiliated with World Curling or CURLIT.

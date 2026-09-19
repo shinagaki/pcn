@@ -39,6 +39,7 @@ Rules and statistical symbols follow the public material of World Curling / CURL
 [PCN "1.0"]
 [Event "LGT World Men's Curling Championship 2026"]
 [Site "Ogden, UT, USA"]
+[Venue "Weber County Ice Sheet"]
 [Date "2026.04.02"]
 [Stage "Round Robin Session 18"]
 [Sheet "A"]
@@ -87,7 +88,8 @@ One `[Key "Value"]` per line. Inside a value, `"` is written `\"` and `\` is wri
 | `PCN` | yes | Specification version. `"1.0"` |
 | `Red` / `Yellow` | yes | Team names. Teams are identified by stone colour (World Curling practice). If the actual colours differ, still use Red/Yellow nominally and give the display colour in `RedColor` etc. |
 | `Event` | | Event name |
-| `Site` | | Venue (city, country) |
+| `Site` | | Location (city, country), e.g. `"Ogden, UT, USA"`. The building goes in `Venue` |
+| `Venue` | | Venue (the building), e.g. `"Weber County Ice Sheet"`. If a sponsor renames the building, write the name in use at the time of the game |
 | `Date` | | `YYYY.MM.DD` (unknown parts as `??`) |
 | `Time` | | Start time `HH:MM` in **venue local time** (World Curling records are local). Infer the time zone from `Site`. Add `TZ` (e.g. `"+09:00"`) only if you need UTC |
 | `Stage` | | Round / session (e.g. `"Round Robin Session 18"`, `"Final"`) |
@@ -110,7 +112,7 @@ One `[Key "Value"]` per line. Inside a value, `"` is written `\"` and `\` is wri
 | `LSD` | | Last stone draw `"Red 286.3; Yellow 199.6"` (cm; outside the house = 199.6) |
 | `Result` | | Final score `"Red-Yellow"` (e.g. `"5-0"`). In progress / unknown: `"*"` |
 | `Termination` | | How the game closed. `Normal` (all scheduled ends played; default) / `Concede` / `Stopped` (cut short before the scheduled ends) / `Forfeit` (no-show, disqualification, out of time). **The reason is not part of the value; write it as a comment on the final end's line** (§4.6) |
-| `Timeout` | | Time-outs (optional), `;`-separated "team, end, before which shot", e.g. `"Y E6 before 5; R EE before 3"`. Several are possible (one per team per end plus one each in extra ends). A `; time-out` comment on the shot line is also fine (§4.6) |
+| `Timeout` | | Time-outs (optional), `;`-separated "team, end, before which of that team's stones" (counted per team, 1–8 or 1–5 in mixed doubles, not the shot number within the end; the same count as "CHN stone 8" in Results Books. Extra ends use their end number, or `EE`), e.g. `"Y E6 before 5; R E11 before 3"`. Several are possible (one per team per end plus one each in extra ends). A `; time-out` comment on the shot line is also fine (§4.6) |
 | `Engine` | | Identifier of the deterministic engine that replays layer ④, as `name/version` (e.g. `"myengine/1"`). Required when `v=` is written |
 | `Source` | | Source (URL etc.) |
 | `Annotator` | | Recorder |
