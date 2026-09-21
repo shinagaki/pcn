@@ -209,7 +209,7 @@ Immediately after a shot line or a `Setup` line, a line starting with `@` gives 
 - Items are `<R|Y><x>,<y>` separated by spaces. Coordinates per §5.1. Order is free.
 - Only stones in play are written (removed stones are omitted).
 - If no stones remain, the line is just `@`.
-- A trailing `*` marks the **thrown stone's final position when it stayed in play** (drawn with a thick black rim in World Curling diagrams). At most one per position. When fitting (③→②) cannot tell which stone was thrown, this mark makes the fitter keep the shooter in play at that spot. Do not mark a position where the shooter went out. Example: `@ R0.10,0.30* Y0.08,2.69`
+- A trailing `*` marks the **shooter's final position when it stayed in play** (drawn with a thick black rim in World Curling diagrams). At most one per position. When fitting (③→②) cannot tell which stone was thrown, this mark makes the fitter keep the shooter in play at that spot. Do not mark a position where the shooter went out. Example: `@ R0.10,0.30* Y0.08,2.69`
 - `@` means "the board as settled **before the next shot**". Stones repositioned by an umpire, and corrections made from video or photos, belong in this board. `Setup` is never written in the middle of an end (only at the start; §4.4).
 
 ### 4.4 Starting from a position (`Setup`)
@@ -234,7 +234,7 @@ Setup
   - A shot with `Anim` is replayed from it in preference to `v=` (④), and `@` is its **final board (t=1)**. Implementations that do not support it ignore the line and replay from `@` (③) / `v=` (④).
 - Future extensions are identified by their leading word. Lines with an unknown leading word are preserved and ignored (an implementation without `Anim` can still replay from `@` / `v=`).
 
-Example (only the thrown stone is animated, with a curve physics would not produce, stopping after 2.4 s):
+Example (only the shooter is animated, with a curve physics would not produce, stopping after 2.4 s):
 
 ```
 9 R S>3
