@@ -1,6 +1,6 @@
 # PCN — Portable Curling Notation 仕様 v1.0（草案）
 
-**形式 1.0 ｜ 文書: 草案 第5版 ｜ 最終更新 2026-09-04 ｜ 状態: 草案**
+**形式 1.0 ｜ 文書: 草案 第6版 ｜ 最終更新 2026-09-29 ｜ 状態: 草案**
 
 カーリングの試合を **人が読み書きでき、機械で正確に処理でき、物理シミュレーションで再現できる** テキスト形式で記録するための標準記譜法です。チェスの PGN、チェッカーの PDN と同じ命名系列に属します。
 
@@ -96,8 +96,8 @@ Score 2-0
 | `RedShort` / `YellowShort` | | 略称（`JPN` など 3〜4文字） |
 | `RedColor` / `YellowColor` | | 表示色（`#rrggbb`） |
 | `RedCoach` / `YellowCoach` | | コーチ。複数は `;` 区切り |
-| `RedReserve` / `YellowReserve` | | リザーブ（Alternate）選手。複数は `;` 区切り |
-| `RedSub` / `YellowSub` | | 試合途中の交代の記録（任意）。例 `"E6 TANAKA for SUZUKI Y"`。複数は `;` 区切り。表示用のメタ情報で、交代後の投球者はショットの `p=` で指定する |
+| `RedReserve` / `YellowReserve` | | リザーブ（Alternate）選手。複数は `;` 区切り。`p=` と `orderR=` / `orderY=`（§4.1）では、`Players` の続きの番号で指す（4人の `Players` なら、リザーブの1人目が `5`） |
+| `RedSub` / `YellowSub` | | 試合途中の交代の記録（任意）。例 `"E6 TANAKA for SUZUKI Y"`。複数は `;` 区切り。表示用のメタ情報で、交代後に誰が投げたかは `End` の `orderR=` / `orderY=`（§4.1）か、ショットの `p=` で書く |
 | `Ends` | | 規定エンド数。WCF 選手権は `10`、ミックスダブルスは `8`（R17(c)）。省略時の既定は `10`。8エンド戦などは明示すること |
 | `Stones` | | 1エンドの1チーム投球数（既定 `8`。ミックスダブルスは `5`） |
 | `Format` | | `Team`（既定）/ `MixedDoubles` / `Wheelchair`。ミックスダブルスは `Stones` 既定 5、投球順 1-2-2-2-1（R17(d)）、各エンドの `Setup` でプレポジション（A・B、R17(f)）を書く。`Wheelchair` は進行が4人制と同じ（違いはスイープ無し）なので、本仕様では4人制と同じ進行として扱う。ルールの既定値には影響する（§6.1） |
@@ -105,7 +105,7 @@ Score 2-0
 | `NoTick` | | `true` / `false`。センターライン上の相手 FGZ ストーンをラインから外せないルール（2022-23〜）。**ミックスダブルスと車いすは対象外**（R7）。省略時は `Date` と `Format` から既定 |
 | `ThinkingTime` | | 持ち時間（10エンド `"38:00"`、8エンド `"30:00"`、ミックスダブルス `"22:00"`） |
 | `SheetWidth` | | シート幅 m（既定 `4.75`＝WCF 上限。WCF は既存施設で下限 `4.42`（R1）。狭いクラブ施設は `4.28`＝14ft2in 等） |
-| `Ice` | | 氷の条件 `"hh=13.8 curl=1.2"`。`hh` = ティーに止まるドローのホッグ間タイム（秒）、`curl` = そのドローのカール量（m）。再生側はこれに合うよう摩擦・カールを校正する。エンジン固有の倍率 `friction=` `curlx=` を併記してもよい |
+| `Ice` | | 氷の条件 `"hh=13.8 curl=1.2 turns=5"`。`hh` = ティーに止まるドローのホッグ間タイム（秒）、`curl` = センターラインを狙ってまっすぐ投げ出したティーのドローが、**止まったときに狙いの線から横へずれた距離**（m。投げ出しから止まるまでの曲がりの合計で、止まった石の中心で測る）、`turns` = 標準の回転数（投げてから止まるまでに石が回る回数。省略時は 5）。`curl` は `turns` の回転数で投げたドローの値とする（回転数で曲がり方が変わるエンジンがあるため）。映像ではハウス側のホッグラインから後の区間だけを測ることが多いが、その値は手前の曲がりを含まないぶん `curl` より小さいので、そのまま書かずに換算して書く。再生側は `hh` と `curl` に合うよう摩擦・カールを校正し、`turns` は回転を指定しない投球（再現器が補う投球）の回転に使う。エンジン固有の倍率 `friction=` `curlx=` を併記してもよい |
 | `LSFE` | | 第1エンドにハンマー（最終投）を持つチーム `Red` / `Yellow` |
 | `LSD` | | ラストストーンドロー `"Red 286.3; Yellow 199.6"`（cm。ハウス外は 199.6） |
 | `Result` | | 最終得点 `"Red-Yellow"`（例 `"5-0"`）。進行中・不明は `"*"` |
@@ -129,6 +129,21 @@ Score <red>-<yellow>
 - `End` の `n` は 1 から。規定エンド後の延長は続き番号（11, 12 …）で書き、`EE` 表示は再生側で行います。
 - `hammer=` は省略可。省略時は前エンドの結果（得点した側の相手が次のハンマー、ブランクなら維持）と `LSFE` から導出します。矛盾する場合は明示値を優先し、警告を出します。
 - そのほかの属性: `powerplay=R|Y`（ミックスダブルスのパワープレイを使った側）、`clockR=MM:SS` / `clockY=MM:SS`（エンド終了時の持ち時間残り）。
+- **氷の変更** `hh=` / `curl=`: そのエンド**から先**の氷の条件。意味は `Ice` タグ（§3）と同じで、`hh` ＝ティーに止まるドローのホッグ間タイム（秒）、`curl` ＝センターラインを狙って投げたティーのドローが止まったときの、狙いの線からの横のずれ（m）。片方だけ書いたときは、もう片方は直前の値のままです。標準の回転数 `turns` は試合で1つで、`Ice` タグにだけ書きます。エンジン固有の倍率 `friction=` `curlx=` を併記してもかまいません。
+  - 氷は試合の途中で変わります（序盤はペブルが新しく重い、整氷・温度で速くなる、など）。整氷はエンドの間に行い、計測もエンドごとにするので、エンドの属性にしています。
+  - 例（第6エンドから速くなった）: `End 6 hammer=R hh=14.3 curl=1.40`
+- **投げる順の変更** `orderR=` / `orderY=`: そのエンド**から先**の投げる順を、選手の番号のカンマ区切りで書きます。番号は `Players` の順に `1` から、リザーブはその続き（`RedReserve` / `YellowReserve` の1人目が `Players` の人数＋1）。
+  - 番号を人数ぶん並べると、`Stones` を人数で割った投数ずつ順に投げます。割り切れないときは先の人から多く投げます（4人なら2投ずつ `orderY=5,2,3,4` ＝ リザーブの1人目がリード。3人なら 3・3・2 投 `orderY=1,2,4`）。
+  - ミックスダブルスは2つ並べます。1つ目が1・5投目、2つ目が2〜4投目です（R17(d)。どちらが1・5投目を投げるかはエンドごとに変えられるので、変えたエンドに書きます。元に戻したエンドにも書きます）。
+  - `Stones` と同じ数だけ並べると、1投ずつの投者になります（3人になって先の2人が3投ずつ投げるとき `orderY=1,1,1,2,2,2,4,4`）。
+  - ルールでは、投げる順とスキップ・バイスを変えてよいのは**リザーブを入れたときだけで、入れるのはエンドの頭**、下がった選手はその試合に戻れません（WCF R3）。そのためエンドの属性にしています。1投だけ別の人が投げた記録は、その投球行の `p=` で書きます。
+  - 例（第5エンドから、リザーブが1人目の選手に代わってリードを投げる）:
+    ```
+    [YellowPlayers "SCHEUERL J; MESSENZEHL F; KAPP B; MUSKATEWITZ M"]
+    [YellowReserve "TREVISIOL M"]
+    ...
+    End 5 hammer=R orderY=5,2,3,4
+    ```
 - `Score` はそのエンドの得点。コンシード等で投げ切らなかったエンドは `Score X`（両チーム未投球）または `Score 2-X` のように `X` で示します。`Score` 行を省略すると未確定（進行中）です。
 - **課題（scenario）属性**: 途中局面から始める記録（「この局面から次の1投を考える」ための切り出し）では、その起点のエンドに次を付けます。**投球エントリを持たずに** 投数・累積スコアを表すためのもので、通常の全記録では不要です。
   - `thrown=<R>-<Y>` … そのエンド開始時点で先攻(R)・後攻(Y)が投げ終えた数（例 `thrown=7-6` なら次は後攻の7投目）
@@ -146,7 +161,7 @@ Score <red>-<yellow>
 | 番号 | `1`〜`16`（ミックスダブルス `1`〜`10`） | エンド内の通し番号。1 から昇順。 |
 | 側 | `R` / `Y` | 省略時は **ハンマーでない側が1投目**、以後交互。順序が乱れた記録（投球順違反など）のときだけ書く |
 | ショット | `<Task><Handle><Points><注釈>` | 下記。`-` と `X` は Task 単独で完結 |
-| `p=` | `1`〜`4` | 投者。`Players` タグの何番目か（1始まり）。省略時は規定順（2投ずつ）。 |
+| `p=` | `1`〜 | 投者。`Players` タグの何番目か（1始まり）。リザーブは `Players` の続きの番号（§3 の `RedReserve`）。省略時はそのエンドの投げる順（`orderR=` / `orderY=`。無ければ規定順＝§6 の3）。 |
 | `t=` | 秒 | ホッグ間タイム（ホッグライン→ホッグライン、21.945m）。石が氷を滑る速さで、氷の状態を表す。例 `t=12.7` |
 | `i=` | 秒 | スプリットタイム（投球側のバックライン→ホッグライン、8.230m）。デリバリー中に測る、投げ手の出力（リリースの強さ）。例 `i=3.7` |
 | `clock=` | `MM:SS` | ショット後の持ち時間残り |
@@ -324,7 +339,7 @@ Score 1-0
 
 1. **投球側**: `End` の `hammer` から、1投目はハンマーでない側。以降交互。`R`/`Y` を明示した行はそれに従い、次の省略行は「投球数が少ない側」が投げます。
 2. **ハンマー**: `LSFE` → 各 `Score` で得点した側の相手。ブランク（0-0）は維持。`X` を含むエンドでは変化なし。
-3. **投者**: `Stones` を人数で割った投数ずつ順番に（4人制なら 2 投ずつ）。`p=` があれば優先。
+3. **投者**: 4人制は `Stones` を `Players` の人数で割った投数ずつ順番に。割り切れないときは先の人から多く（4人なら2投ずつ、3人なら 3・3・2）。ミックスダブルスは 1-2-2-2-1（1人目が1・5投目）。`orderR=` / `orderY=` のあるエンドから先はその順（§4.1）。`p=` があれば優先。
 4. **評価%**: `Points × 25`。チーム／選手の成功率は `Σpoints ÷ (4 × 対象ショット数)`。`-` と `X` は分母に含めない。
 5. **最終得点**: `Score` の合計。`Result` タグと食い違えば `Result` を優先して警告。
 
@@ -479,6 +494,7 @@ End 3 hammer=R
 
 | 文書 | 日付 |
 |---|---|
+| 草案 第6版 | 2026-09-29 |
 | 草案 第5版 | 2026-09-04 |
 | 草案 第4版 | 2026-09-01 |
 | 草案 第3版 | 2026-08-25 |
@@ -487,8 +503,8 @@ End 3 hammer=R
 
 ## Quick reference (English)
 
-- Header tags `[Key "Value"]`: `PCN`, `Event`, `Site` (city, country), `Venue` (building), `Date` (YYYY.MM.DD), `Stage`, `Sheet`, `Red`, `Yellow`, `RedPlayers`/`YellowPlayers` (`;`-separated, throwing order), `Format` (Team|MixedDoubles|Wheelchair), `Ends`, `Stones`, `FGZ` (0|3|4|5, default by date **and format**), `NoTick` (true|false, default by date and format; never in mixed doubles or wheelchair), `ThinkingTime`, `SheetWidth` (m), `Ice` ("hh=<hog-to-hog seconds of a tee draw> curl=<metres>"), `LSFE` (Red|Yellow), `LSD`, `Result` ("r-y"), `Termination` (Normal|Concede|Stopped|Forfeit; the reason goes in the final end's comment), `Engine`, `Source`.
-- Body: `End n [hammer=R|Y] [powerplay=R|Y] [clockR=MM:SS clockY=MM:SS]`, optional `Setup` + board line for pre-positioned stones, shot lines `n [R|Y] TASK[>|<][0-4][!?] [p=k] [t=sec] [v=x,y,vx,vy,w] [est] ; comment`, optional board line `@ Rx,y Yx,y ...` after a shot, `Score r-y` (X = unplayed).
+- Header tags `[Key "Value"]`: `PCN`, `Event`, `Site` (city, country), `Venue` (building), `Date` (YYYY.MM.DD), `Stage`, `Sheet`, `Red`, `Yellow`, `RedPlayers`/`YellowPlayers` (`;`-separated, throwing order), `Format` (Team|MixedDoubles|Wheelchair), `Ends`, `Stones`, `FGZ` (0|3|4|5, default by date **and format**), `NoTick` (true|false, default by date and format; never in mixed doubles or wheelchair), `ThinkingTime`, `SheetWidth` (m), `Ice` ("hh=<hog-to-hog seconds of a tee draw> curl=<metres the same draw, aimed down the centre line, ends up off the aim line> turns=<standard turns per delivery, default 5>"), `LSFE` (Red|Yellow), `LSD`, `Result` ("r-y"), `Termination` (Normal|Concede|Stopped|Forfeit; the reason goes in the final end's comment), `Engine`, `Source`.
+- Body: `End n [hammer=R|Y] [powerplay=R|Y] [clockR=MM:SS clockY=MM:SS] [hh=sec curl=m] [orderR=k,k,… orderY=k,k,…]` (ice and throwing order from that end on; reserves are numbered after `Players`), optional `Setup` + board line for pre-positioned stones, shot lines `n [R|Y] TASK[>|<][0-4][!?] [p=k] [t=sec] [v=x,y,vx,vy,w] [est] ; comment`, optional board line `@ Rx,y Yx,y ...` after a shot, `Score r-y` (X = unplayed).
 - Tasks follow the World Curling / CURLIT statisticians' codes: D Draw, F Front, G Guard, R Raise, W Wick/Split, Z Freeze, T Take-out, H Hit and Roll, C Clearing, S Double Take-out, P Promotion Take-out, `-` Through, `X` Not considered, `?` Unspecified (task not yet assigned; a reproducer fits without a task hint and may classify it from the board). Handle: `>` clockwise (in-turn), `<` counter-clockwise (out-turn). Points 0–4 = 0–100%.
 - Rules and statistics follow World Curling's *The Rules of Curling* (R6 FGZ, R7 no-tick, R17 mixed doubles) and the CURLIT statisticians' manual — see §11 for sources. This document is unofficial and not affiliated with World Curling or CURLIT.
 - Coordinates: metres, origin at the tee of the playing end, +x to the thrower's right, +y toward the thrower (guards positive). Angular velocity positive = counter-clockwise.

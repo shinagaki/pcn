@@ -50,7 +50,7 @@ Shot types and ratings follow the World Curling / CURLIT statisticians' manual *
 
 ## Status
 
-PCN 1.0 is a **draft** (5th revision, 2026-09-04). The `[PCN "1.0"]` value names the format family and will not change while the document is a draft; the document itself is versioned by revision (see [CHANGELOG](CHANGELOG.md)). The Japanese text is normative; where the English edition differs, the Japanese edition prevails.
+PCN 1.0 is a **draft** (6th revision, 2026-09-29). The `[PCN "1.0"]` value names the format family and will not change while the document is a draft; the document itself is versioned by revision (see [CHANGELOG](CHANGELOG.md)). The Japanese text is normative; where the English edition differs, the Japanese edition prevails.
 
 This is an unofficial document with no affiliation to World Curling or CURLIT. Where its reading of the rules differs from *The Rules of Curling* (World Curling, July 2024), the original prevails.
 
@@ -86,7 +86,7 @@ Open an issue for anything unclear, missing, or wrong in the spec. Reports of th
 PCN（Portable Curling Notation）は、カーリングの試合を1投1行のテキストで記録する記譜形式です。人が読み書きでき、機械が正確に処理でき、物理シミュレーションで再現できることを目指しています。
 
 - 仕様（正本）: [spec/PCN_SPEC.md](spec/PCN_SPEC.md)　英語版: [spec/PCN_SPEC.en.md](spec/PCN_SPEC.en.md)
-- 状態: v1.0 草案（第5版、2026-09-04）。World Curling・CURLIT とは関係のない非公式の文書です
+- 状態: v1.0 草案（第6版、2026-09-29）。World Curling・CURLIT とは関係のない非公式の文書です
 - ライセンス: 仕様・文法・スキーマ・文書は CC BY 4.0、コードは MIT
 - 参照実装: [CurlFlux](https://curlflux.creco.net/)（作戦ボード。「PCN を開く」でこの形式のファイルを再生できます）
 - 解説記事: Zenn（準備中）

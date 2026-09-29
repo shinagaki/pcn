@@ -1,6 +1,6 @@
 # PCN — Portable Curling Notation, specification v1.0 (draft)
 
-**Format 1.0 | Document: draft, 5th revision | Last updated 2026-09-05 | Status: draft**
+**Format 1.0 | Document: draft, 6th revision | Last updated 2026-09-29 | Status: draft**
 
 *This is the English edition of [PCN_SPEC.md](PCN_SPEC.md). The Japanese text is the reference; where the two differ, the Japanese edition prevails. Section numbers match.*
 
@@ -98,8 +98,8 @@ One `[Key "Value"]` per line. Inside a value, `"` is written `\"` and `\` is wri
 | `RedShort` / `YellowShort` | | Abbreviation (`JPN` etc., 3–4 letters) |
 | `RedColor` / `YellowColor` | | Display colour (`#rrggbb`) |
 | `RedCoach` / `YellowCoach` | | Coaches, `;`-separated |
-| `RedReserve` / `YellowReserve` | | Alternates, `;`-separated |
-| `RedSub` / `YellowSub` | | In-game substitutions (optional), e.g. `"E6 TANAKA for SUZUKI Y"`, `;`-separated. Display metadata only; the actual thrower after a substitution is given per shot with `p=` |
+| `RedReserve` / `YellowReserve` | | Alternates, `;`-separated. `p=` and `orderR=` / `orderY=` (§4.1) refer to them with the numbers that follow `Players` (with four `Players`, the first alternate is `5`) |
+| `RedSub` / `YellowSub` | | In-game substitutions (optional), e.g. `"E6 TANAKA for SUZUKI Y"`, `;`-separated. Display metadata only; who throws after a substitution is given by the `End` attributes `orderR=` / `orderY=` (§4.1) or per shot with `p=` |
 | `Ends` | | Scheduled ends. World Curling championships `10`, mixed doubles `8` (R17(c)). Default `10`; write it explicitly for 8-end games |
 | `Stones` | | Stones per team per end (default `8`, mixed doubles `5`) |
 | `Format` | | `Team` (default) / `MixedDoubles` / `Wheelchair`. Mixed doubles: `Stones` defaults to 5, throwing order 1-2-2-2-1 (R17(d)), pre-positioned stones written in each end's `Setup` (R17(f)). `Wheelchair` plays like the four-player game (no sweeping) and is treated the same way here; it affects rule defaults (§6.1) |
@@ -107,7 +107,7 @@ One `[Key "Value"]` per line. Inside a value, `"` is written `\"` and `\` is wri
 | `NoTick` | | `true` / `false`. Opponent FGZ stones on the centre line may not be moved off the line (from 2022-23). **Does not apply to mixed doubles or wheelchair** (R7). Default from `Date` and `Format` |
 | `ThinkingTime` | | Thinking time (`"38:00"` for 10 ends, `"30:00"` for 8, `"22:00"` mixed doubles) |
 | `SheetWidth` | | Sheet width in metres (default `4.75` = World Curling maximum; existing facilities may be as narrow as `4.42` (R1); narrow club sheets e.g. `4.28` = 14 ft 2 in) |
-| `Ice` | | Ice conditions `"hh=13.8 curl=1.2"`. `hh` = hog-to-hog time in seconds of a draw stopping on the tee, `curl` = its curl in metres. Players calibrate friction and curl to match. Engine-specific multipliers `friction=` `curlx=` may be added |
+| `Ice` | | Ice conditions `"hh=13.8 curl=1.2 turns=5"`. `hh` = hog-to-hog time in seconds of a draw stopping on the tee, `curl` = how far a draw to the tee, released straight along the centre line as its aim, **ends up to the side of the aim line when it stops**, in metres (the total curl from release to rest, measured to the centre of the stopped stone), `turns` = the standard number of turns (how many times a stone rotates from release until it stops; 5 if omitted). `curl` is the value for a draw thrown with `turns` turns (some engines curl differently with the number of turns). Video often measures only the part after the far (house-end) hog line; that value is smaller than `curl` because it leaves out the curl before it, so convert it rather than writing it as is. Players calibrate friction and curl to match `hh` and `curl`, and use `turns` for the rotation of deliveries whose rotation is not given (those a reproducer fills in). Engine-specific multipliers `friction=` `curlx=` may be added |
 | `LSFE` | | Team with the hammer (last stone) in end 1: `Red` / `Yellow` |
 | `LSD` | | Last stone draw `"Red 286.3; Yellow 199.6"` (cm; outside the house = 199.6) |
 | `Result` | | Final score `"Red-Yellow"` (e.g. `"5-0"`). In progress / unknown: `"*"` |
@@ -131,6 +131,21 @@ Score <red>-<yellow>
 - `n` starts at 1. Extra ends continue the numbering (11, 12 …); showing `EE` is up to the player.
 - `hammer=` may be omitted; it is then derived from the previous end (the team that did not score gets the hammer; a blank keeps it) and from `LSFE`. If they conflict, the explicit value wins with a warning.
 - Other attributes: `powerplay=R|Y` (mixed doubles power play), `clockR=MM:SS` / `clockY=MM:SS` (thinking time left at the end of the end).
+- **Change of ice** `hh=` / `curl=`: ice conditions **from that end on**, with the same meaning as the `Ice` tag (§3): `hh` = hog-to-hog time of a draw to the tee (s), `curl` = how far a draw to the tee aimed down the centre line ends up off the aim line when it stops (m). If only one is written, the other keeps its previous value. The standard number of turns `turns` is one per game and is written only in the `Ice` tag. The engine-specific multipliers `friction=` `curlx=` may be added.
+  - Ice changes during a game (heavier early while the pebble is fresh, faster after scraping or as the temperature changes, and so on). Scraping happens between ends, and measurements are taken end by end, so this is an end attribute.
+  - Example (faster from end 6): `End 6 hammer=R hh=14.3 curl=1.40`
+- **Change of delivery rotation** `orderR=` / `orderY=`: the delivery rotation **from that end on**, as comma-separated player numbers. Players are numbered from `1` in `Players` order, and alternates continue the numbering (the first name in `RedReserve` / `YellowReserve` is the number of `Players` plus one).
+  - One number per player: each throws `Stones` divided by the number of players, in order; when it does not divide evenly, earlier players throw more (four players: two each, `orderY=5,2,3,4` = the first alternate throws lead; three players: 3, 3 and 2, `orderY=1,2,4`).
+  - Mixed doubles takes two numbers: the first throws stones 1 and 5, the second stones 2 to 4 (R17(d)). The team may change who throws stones 1 and 5 from end to end, so write it on each end where it changes, including an end where it changes back.
+  - As many numbers as `Stones`: the thrower of each stone (when a team drops to three players and the first two throw three each, `orderY=1,1,1,2,2,2,4,4`).
+  - Under the rules, the delivery rotation and the skip and vice-skip positions may change **only when an alternate is brought in, and only at the start of an end**; the replaced player may not return to the game (WCF R3). That is why this is an end attribute. A single stone thrown by someone else is written with `p=` on that shot line.
+  - Example (from end 5, the alternate replaces the first player and throws lead):
+    ```
+    [YellowPlayers "SCHEUERL J; MESSENZEHL F; KAPP B; MUSKATEWITZ M"]
+    [YellowReserve "TREVISIOL M"]
+    ...
+    End 5 hammer=R orderY=5,2,3,4
+    ```
 - `Score` is the score of that end. An end not played to completion (concession etc.) is written `Score X` (neither team threw) or `Score 2-X`. Omitting `Score` means the end is not yet decided (in progress).
 - **Scenario attributes**: a record that starts mid-game (a position "to think about the next shot") adds the following to its starting end. They express shot counts and cumulative score **without shot entries**, and are not needed in a full record.
   - `thrown=<R>-<Y>` … stones already thrown by first (R) and second (Y) at the start of the end (e.g. `thrown=7-6` means the next shot is the hammer team's 7th)
@@ -148,7 +163,7 @@ Score <red>-<yellow>
 | number | `1`–`16` (mixed doubles `1`–`10`) | Sequence number within the end, ascending from 1 |
 | side | `R` / `Y` | If omitted, **the non-hammer team throws first**, then alternate. Write it only when the order was irregular (e.g. a throwing-order violation) |
 | shot | `<Task><Handle><Points><annotation>` | See below. `-` and `X` stand alone as Task |
-| `p=` | `1`–`4` | Thrower: index into the `Players` tag (1-based). Default is the regular order (two stones each) |
+| `p=` | `1`– | Thrower: index into the `Players` tag (1-based). Alternates continue the numbering after `Players` (§3, `RedReserve`). Default is the end's delivery rotation (`orderR=` / `orderY=`; otherwise the regular order, §6 rule 3) |
 | `t=` | seconds | Hog-to-hog time (hog line to hog line, 21.945 m): how fast the stone travels on the ice, which describes the ice, e.g. `t=12.7` |
 | `i=` | seconds | Split time (delivery-end back line to hog line, 8.230 m): measured during the delivery, it gives the thrower's release weight, e.g. `i=3.7` |
 | `clock=` | `MM:SS` | Thinking time left after the shot |
@@ -326,7 +341,7 @@ A shot with `v=` replayed by the deterministic engine named in `[Engine ...]` re
 
 1. **Throwing side**: from the `End` `hammer`, the first stone is thrown by the non-hammer team, then alternately. Lines with an explicit `R`/`Y` are followed; the next omitted line is thrown by "the team with fewer stones thrown".
 2. **Hammer**: `LSFE` → after each `Score`, the team that did not score. A blank (0-0) keeps it. Ends with `X` do not change it.
-3. **Thrower**: `Stones` divided by the number of players, in order (two each in the four-player game). `p=` overrides.
+3. **Thrower**: in the four-player game, `Stones` divided by the number of `Players`, in order; when it does not divide evenly, earlier players throw more (two each for four players; 3, 3 and 2 for three). Mixed doubles: 1-2-2-2-1 (the first player throws stones 1 and 5). From an end with `orderR=` / `orderY=` on, that rotation (§4.1). `p=` overrides.
 4. **Percentage**: `Points × 25`. Team / player percentage = `Σpoints ÷ (4 × rated shots)`. `-` and `X` are excluded from the denominator.
 5. **Final score**: sum of `Score` lines. If it conflicts with `Result`, `Result` wins with a warning.
 
@@ -481,6 +496,7 @@ The `[PCN "1.0"]` value in files names the format family and is not revised whil
 
 | Document | Date |
 |---|---|
+| Draft, 6th revision | 2026-09-29 |
 | Draft, 5th revision (English edition added) | 2026-09-05 |
 | Draft, 4th revision | 2026-09-01 |
 | Draft, 3rd revision | 2026-08-25 |
