@@ -291,7 +291,7 @@ The value only says **how the game closed**, in four ways. **The reason is not i
 | `Forfeit` | Decided by something other than play (no-show, disqualification, out of time) | The `Result` tag |
 
 - With `Concede` / `Stopped` / `Forfeit`, unplayed ends are written `Score X` (neither team threw) or `Score 2-X`. `Result` carries the deciding score.
-- **The score of a conceded end** follows World Curling's rule R12(h). If both teams still have stones to deliver, write `X`. If only one team has delivered
+- **The score of a conceded end** follows World Curling's rule R12(i). If both teams still have stones to deliver, write `X`. If only one team has delivered
   all its stones and the team that still has stones to deliver has stone(s) counting, write those points (e.g. the hammer team counts one with its last stone
   still to come → `Score 0-1`). If the team that delivered all its stones is counting, or no stone is counting, write `X`. When the game has an official
   record, write the official score as it is (World Curling records include cases where the team that delivered all its stones was given its points).
@@ -478,12 +478,12 @@ Primary material this specification follows. The specification is unofficial and
 
 | Content | Source |
 |---|---|
-| Rules of play (score of a conceded end = R12(h), FGZ = R6, no-tick = R7, mixed doubles = R17, wheelchair = R14) | *The Rules of Curling and Rules of Competition*, World Curling, July 2024 ([list](https://worldcurling.org/rules/) / [PDF](https://worldcurling.org/wp-content/uploads/2024/08/Rules-2024.pdf)) |
+| Rules of play (score of a conceded end = R12(i), FGZ = R6, no-tick = R7, mixed doubles = R17, wheelchair = R14) | *The Rules of Curling and Rules of Competition*, World Curling, 1 September 2026 ([list](https://worldcurling.org/rules/) / [PDF](https://worldcurling.org/wp-content/uploads/2026/08/Rules2026.pdf)) |
 | Definitions of Task, Handle and Points | *Curling Statistics: How to Score*, © World Curling and CURLIT Ltd., 2025 ([PDF](https://curlit.com/powerpoint/StatsTraining_2025_2026.pdf)) |
 | Source data for layers ② and ③ (Shot by Shot, diagrams) | World Curling Live Scores (`livescores.worldcurling.org`) / CURLIT Results Books (`curlit.com`) |
 | History of the FGZ and national adoption dates | Curling Canada "History of Curling"; World Curling announcements (five-rock decision at the September 2017 Congress, 2022 no-tick trial) |
 
-Rule excerpts (July 2024 edition, paraphrased):
+Rule excerpts (1 September 2026 edition, paraphrased):
 
 - **R6(b)** — before the 6th stone of an end, if a delivered stone directly or indirectly moves an opponent's FGZ stone out of play, the delivered stone is removed and the moved stones are returned.
 - **R7** — before the 6th stone, if an opponent's FGZ stone touching the centre line is moved off the line or out of the FGZ, the non-offending team chooses between "remove and restore" and "leave". **Not applied to wheelchair or mixed doubles.**

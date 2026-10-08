@@ -53,7 +53,7 @@ Shot types and ratings follow the World Curling / CURLIT statisticians' manual *
 
 PCN 1.0 is a **draft** (6th revision, 2026-09-29). The `[PCN "1.0"]` value names the format family and will not change while the document is a draft; the document itself is versioned by revision (see [CHANGELOG](CHANGELOG.md)). The Japanese text is normative; where the English edition differs, the Japanese edition prevails.
 
-This is an unofficial document with no affiliation to World Curling or CURLIT. Where its reading of the rules differs from *The Rules of Curling* (World Curling, July 2024), the original prevails.
+This is an unofficial document with no affiliation to World Curling or CURLIT. Where its reading of the rules differs from *The Rules of Curling* (World Curling, 1 September 2026), the original prevails.
 
 ## Examples
 

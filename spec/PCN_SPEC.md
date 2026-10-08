@@ -289,7 +289,7 @@ Shot by Shot の記録でも分けられないため、まとめて1つのコー
 | `Forfeit` | 投球以外の理由で勝敗が決まった（不戦・失格・持ち時間切れ） | `Result` タグが正 |
 
 - `Concede` / `Stopped` / `Forfeit` では、投げなかったエンドは `Score X`（両者未投）または `Score 2-X` のように `X` で示します。`Result` には決着スコアを書きます。
-- **投了したエンドの得点**は World Curling の規則（R12(h)）に従います。両チームに投げる石が残っていれば `X`。一方だけが投げ終えていて、まだ投げる石が
+- **投了したエンドの得点**は World Curling の規則（R12(i)）に従います。両チームに投げる石が残っていれば `X`。一方だけが投げ終えていて、まだ投げる石が
   残っている側の石が数えられるなら、その点を書きます（例: 後攻が最後の1投を残して1点を持っていた → `Score 0-1`）。投げ終えた側の石が数えられる・
   数えられる石が無いときは `X`。ただし公式記録が付いている試合は、公式記録の得点をそのまま書きます（World Curling の記録には、投げ終えた側の石が
   数えられる場合にも得点を付けた例がある）。
@@ -476,12 +476,12 @@ End 3 hammer=R
 
 | 内容 | 資料 |
 |---|---|
-| 競技規則（投了したエンドの得点 = R12(h)、FGZ = R6、ノーティック = R7、ミックスダブルス = R17、車いす = R14） | *The Rules of Curling and Rules of Competition*, World Curling, July 2024（[一覧](https://worldcurling.org/rules/) ／ [PDF](https://worldcurling.org/wp-content/uploads/2024/08/Rules-2024.pdf)） |
+| 競技規則（投了したエンドの得点 = R12(i)、FGZ = R6、ノーティック = R7、ミックスダブルス = R17、車いす = R14） | *The Rules of Curling and Rules of Competition*, World Curling, 1 September 2026（[一覧](https://worldcurling.org/rules/) ／ [PDF](https://worldcurling.org/wp-content/uploads/2026/08/Rules2026.pdf)） |
 | ショット種別（Task）・回転（Handle）・評価（Points）の定義 | *Curling Statistics: How to Score*, © World Curling and CURLIT Ltd., 2025（[PDF](https://curlit.com/powerpoint/StatsTraining_2025_2026.pdf)） |
 | ②③層の元データ（Shot by Shot・配置図） | World Curling Live Scores（`livescores.worldcurling.org`）／ CURLIT Results Book（`curlit.com`） |
 | FGZ の成立と各国の導入時期 | Curling Canada「History of Curling」、World Curling の年次発表（2017年9月総会の5ロック決定、2022年のノーティック試行） |
 
-規則の引用箇所（2024年7月版）:
+規則の引用箇所（2026年9月1日版）:
 
 - **R6(b)**「6投目の投球前に、投じた石が直接・間接に相手の石を FGZ から場外へ動かした場合、投じた石を除き、動いた石を戻す」
 - **R7**「6投目の投球前に、FGZ 内でセンターラインに接している相手の石をライン外／FGZ 外へ動かした場合、違反されなかった側が『除いて戻す』か『そのまま』を選ぶ。**車いす・ミックスダブルスには適用しない**」
@@ -494,7 +494,7 @@ End 3 hammer=R
 
 | 文書 | 日付 |
 |---|---|
-| 草案 第6版 | 2026-09-29 |
+| 草案 第6版 | 2026-09-29（2026-10-08 に規則の引用を2026年9月1日版へ。投了したエンドの得点は R12(i) に移った。形式の変更なし） |
 | 草案 第5版 | 2026-09-04 |
 | 草案 第4版 | 2026-09-01 |
 | 草案 第3版 | 2026-08-25 |
