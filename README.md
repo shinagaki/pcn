@@ -29,7 +29,8 @@ Score 3-0
 - **Grammar** — [EBNF](grammar/pcn.ebnf)
 - **PCN-JSON** — [JSON Schema](schema/pcn-json.schema.json)
 - **Examples** — [`examples/`](examples/) (one file per feature, plus one real game)
-- **Reference implementation** — [CurlFlux](https://curlflux.creco.net/), a browser strategy board that replays PCN files with a deterministic physics engine. Its "Open PCN" button reads any file in this format.
+- **Reference implementation** — [CurlFlux](https://curlflux.creco.net/?lang=en), a browser strategy board that replays PCN files with a deterministic physics engine. Its "Open a PCN file" menu item reads any file in this format, and its [game library](https://curlflux.creco.net/library/en/) of over 600 real games is recorded in PCN.
+- **Articles** — [PCN: a text notation for curling games, one line per shot](https://dev.to/shinagaki/pcn-a-text-notation-for-curling-games-one-line-per-shot-41c8) (dev.to, English) · [Zenn](https://zenn.dev/shinagaki/articles/ec8a79a997cf7d) (Japanese)
 
 ## Why
 
@@ -88,7 +89,7 @@ PCN（Portable Curling Notation）は、カーリングの試合を1投1行の�
 - 仕様（正本）: [spec/PCN_SPEC.md](spec/PCN_SPEC.md)　英語版: [spec/PCN_SPEC.en.md](spec/PCN_SPEC.en.md)
 - 状態: v1.0 草案（第6版、2026-09-29）。World Curling・CURLIT とは関係のない非公式の文書です
 - ライセンス: 仕様・文法・スキーマ・文書は CC BY 4.0、コードは MIT
-- 参照実装: [CurlFlux](https://curlflux.creco.net/)（作戦ボード。「PCN を開く」でこの形式のファイルを再生できます）
-- 解説記事: Zenn（準備中）
+- 参照実装: [CurlFlux](https://curlflux.creco.net/)（作戦ボード。メニューの「PCN を開く」でこの形式のファイルを再生できます。[実戦記録のライブラリ](https://curlflux.creco.net/library/)の600試合あまりも PCN で記録しています）
+- 解説記事: [Zenn](https://zenn.dev/shinagaki/articles/ec8a79a997cf7d)（日本語）・[dev.to](https://dev.to/shinagaki/pcn-a-text-notation-for-curling-games-one-line-per-shot-41c8)（英語）
 
 意見や報告は Issue へ。日本語で構いません。
