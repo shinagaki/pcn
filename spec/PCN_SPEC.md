@@ -1,6 +1,6 @@
 # PCN — Portable Curling Notation 仕様 v1.0（草案）
 
-**形式 1.0 ｜ 文書: 草案 第6版 ｜ 最終更新 2026-09-29 ｜ 状態: 草案**
+**形式 1.0 ｜ 文書: 草案 第7版 ｜ 最終更新 2026-10-16 ｜ 状態: 草案**
 
 カーリングの試合を **人が読み書きでき、機械で正確に処理でき、物理シミュレーションで再現できる** テキスト形式で記録するための標準記譜法です。チェスの PGN、チェッカーの PDN と同じ命名系列に属します。
 
@@ -30,6 +30,7 @@
 3. **行指向・追記可能** — 1ショット＝1行。`grep` や表計算ソフトで扱え、差分が読めます。先頭から順に読める形なので、投げるたびに1行足していけばライブ記録になります（`Score` 行が無いエンドは進行中）。
 4. **既存の記録を置き換えるのではなく、内包する** — 公開されている記録（ラインスコア、WCF/CURLIT の Shot by Shot、コーチ用アプリの CSV、シミュレータのログ）は、そのまま①〜④のどれかに収まります。カーリングには PGN（チェス）や PDN（ドラフツ）にあたる公開の記譜形式が見当たらないため、既存資料の受け皿になることを優先しています。
 5. **暗黙値は導出可能なものだけ** — 投球順（先攻・後攻）や投者の位置はルールから決まるので省略でき、例外（スキップがリードの石を投げる等）だけ明示します。
+6. **ルールは World Curling を基本とし、違いは宣言する** — 既定のルールは World Curling の競技規則です。プロツアーやリーグの変則ルール（ブランクの回数の制限、シュートアウト、得点の数え方など）は `Rules` タグで宣言します（§6.2・§6.3）。ルールは省いた値を導き、記録を照合するためのもので、**書かれた記録（`Score`・`hammer=`・`@`）が常に正**です。知らないルールがあっても、読み手は記録をそのまま読めます。
 
 ## 2. 全体構造
 
@@ -100,16 +101,18 @@ Score 2-0
 | `RedSub` / `YellowSub` | | 試合途中の交代の記録（任意）。例 `"E6 TANAKA for SUZUKI Y"`。複数は `;` 区切り。表示用のメタ情報で、交代後に誰が投げたかは `End` の `orderR=` / `orderY=`（§4.1）か、ショットの `p=` で書く |
 | `Ends` | | 規定エンド数。WCF 選手権は `10`、ミックスダブルスは `8`（R17(c)）。省略時の既定は `10`。8エンド戦などは明示すること |
 | `Stones` | | 1エンドの1チーム投球数（既定 `8`。ミックスダブルスは `5`） |
-| `Format` | | `Team`（既定）/ `MixedDoubles` / `Wheelchair`。ミックスダブルスは `Stones` 既定 5、投球順 1-2-2-2-1（R17(d)）、各エンドの `Setup` でプレポジション（A・B、R17(f)）を書く。`Wheelchair` は進行が4人制と同じ（違いはスイープ無し）なので、本仕様では4人制と同じ進行として扱う。ルールの既定値には影響する（§6.1） |
-| `FGZ` | | 石を守るルールが効く投数 `0` / `3` / `4` / `5`。省略時は `Date` と `Format` から既定（§6.1）。ミックスダブルスの `3` は4人制の FGZ とは別のルール（§6.1） |
-| `NoTick` | | `true` / `false`。センターライン上の相手 FGZ ストーンをラインから外せないルール（2022-23〜）。**ミックスダブルスと車いすは対象外**（R7）。省略時は `Date` と `Format` から既定 |
-| `ThinkingTime` | | 持ち時間（10エンド `"38:00"`、8エンド `"30:00"`、ミックスダブルス `"22:00"`） |
+| `Format` | | `Team`（既定）/ `MixedDoubles` / `Wheelchair` / `WheelchairMixedDoubles` / `Mixed`。ミックスダブルスは `Stones` 既定 5、投球順 1-2-2-2-1（R17(d)）、各エンドの `Setup` でプレポジション（A・B、R17(f)）を書く。`Wheelchair` は進行が4人制と同じ（違いはスイープ無し）なので、本仕様では4人制と同じ進行として扱う。`WheelchairMixedDoubles` は車いすのミックスダブルスで、進行はミックスダブルスと同じ。`Mixed` は男女2人ずつの4人制（R16）で、進行は `Team` と同じ。どの値もルールの既定値に影響する（§6.1） |
+| `FGZ` | | 石を守るルールが効く投数（`0`〜`15` の整数。`5` なら5投目までの石を守り、6投目から出してよい）。World Curling の4人制は `5`、ミックスダブルスは `3`。省略時は `Date` と `Format` から既定（§6.1）。ミックスダブルスの `3` は4人制の FGZ とは守る対象が違う（§6.1）。守り方を変える大会は `Rules` の `fgzmove` / `fgzsides` / `fgzzone` で書く（§6.2） |
+| `NoTick` | | `true` / `false`。センターライン上の相手 FGZ ストーンをラインから外せないルール（2022-23〜）。**ミックスダブルスと車いすは対象外**（R7）。省略時は `Date` と `Format` から既定。一部のエンドにだけ効かせる大会は `Rules` の `notickends` で書く（§6.2） |
+| `Rules` | | 既定（World Curling の規則）と違うルール `"key=value key=value …"`。ブランクのハンマー、同点の決め方、得点の数え方、FGZ の守り方、持ち時間切れの扱いなど。キーと既定値は §6.2、大会ごとの書き方は §6.3 |
+| `ThinkingTime` | | 持ち時間（10エンド `"38:00"`、8エンド `"30:00"`、ミックスダブルス `"22:00"`）。1エンドごとに与える方式は `"4:00/end"` と書く |
 | `SheetWidth` | | シート幅 m（既定 `4.75`＝WCF 上限。WCF は既存施設で下限 `4.42`（R1）。狭いクラブ施設は `4.28`＝14ft2in 等） |
 | `Ice` | | 氷の条件 `"hh=13.8 curl=1.2 turns=5"`。`hh` = ティーに止まるドローのホッグ間タイム（秒）、`curl` = センターラインを狙ってまっすぐ投げ出したティーのドローが、**止まったときに狙いの線から横へずれた距離**（m。投げ出しから止まるまでの曲がりの合計で、止まった石の中心で測る）、`turns` = 標準の回転数（投げてから止まるまでに石が回る回数。省略時は 5）。`curl` は `turns` の回転数で投げたドローの値とする（回転数で曲がり方が変わるエンジンがあるため）。映像ではハウス側のホッグラインから後の区間だけを測ることが多いが、その値は手前の曲がりを含まないぶん `curl` より小さいので、そのまま書かずに換算して書く。再生側は `hh` と `curl` に合うよう摩擦・カールを校正し、`turns` は回転を指定しない投球（再現器が補う投球）の回転に使う。エンジン固有の倍率 `friction=` `curlx=` を併記してもよい |
 | `LSFE` | | 第1エンドにハンマー（最終投）を持つチーム `Red` / `Yellow` |
 | `LSD` | | ラストストーンドロー `"Red 286.3; Yellow 199.6"`（cm。ハウス外は 199.6） |
-| `Result` | | 最終得点 `"Red-Yellow"`（例 `"5-0"`）。進行中・不明は `"*"` |
-| `Termination` | | 試合の閉じ方。`Normal`（規定エンドを投げ切った。既定）/ `Concede`（投了）/ `Stopped`（規定エンドを待たずに打ち切り）/ `Forfeit`（不戦・失格・持ち時間切れ）。**理由は値に入れず、最終エンドの行のコメントに自由記述で書く**（§4.6）|
+| `Result` | | 最終得点 `"Red-Yellow"`（例 `"5-0"`）。進行中・不明は `"*"`。シュートアウトで決めた試合は同点の得点のまま書く（例 `"4-4"`。勝者は `Shootout` から導く） |
+| `Termination` | | 試合の閉じ方。`Normal`（規定エンドを投げ切った。既定）/ `Concede`（投了）/ `Stopped`（規定エンドを待たずに打ち切り）/ `Forfeit`（不戦・失格・持ち時間切れ）/ `Shootout`（同点で終わり、シュートアウトで決めた）。**理由は値に入れず、最終エンドの行のコメントに自由記述で書く**（§4.6）|
+| `Shootout` | | シュートアウト（ボタンへのドローで勝者を決める）の結果 `"R 23.5; Y 41.0"`。投げた順に `<側> <距離 cm>` を `;` で並べる。距離は `LSD` と同じくティーから石の中心まで。ピンを覆って測れない石は `0`、ハウスの外は `199.6`。投げた選手を書くときは距離の後ろに括弧で添える（`R 23.5 (FUJISAWA S)`）。同点で投げ直したら続けて並べる（§4.6） |
 | `Timeout` | | タイムアウトの記録（任意）。`;` 区切りで「チーム・エンド・そのチームの何投目の前か」を並べる（投目はエンドの通し番号ではなくチームごとに 1〜8、ミックスダブルスは 1〜5。Results Book の「CHN stone 8」と同じ数え方。エクストラエンドもエンド番号で書き、`EE` とも書ける）。例 `"Y E6 before 5; R E11 before 3"`。1試合で複数取れる（各チーム1エンド1回＋エクストラエンドで各もう1回）ので複数可。手早く済ますならショット行の `; time-out` コメントでもよい（§4.6） |
 | `Engine` | | ④層の運動量を再生する物理エンジン識別子。`名前/版` 形式（例 `"myengine/1"`）。運動量を書くときは必須 |
 | `Source` | | 出典（URL など） |
@@ -127,7 +130,7 @@ Score <red>-<yellow>
 ```
 
 - `End` の `n` は 1 から。規定エンド後の延長は続き番号（11, 12 …）で書き、`EE` 表示は再生側で行います。
-- `hammer=` は省略可。省略時は前エンドの結果（得点した側の相手が次のハンマー、ブランクなら維持）と `LSFE` から導出します。矛盾する場合は明示値を優先し、警告を出します。
+- `hammer=` は省略可。省略時は前エンドの結果（得点した側の相手が次のハンマー。ブランクは `Rules` の `blank` に従い、既定は4人制なら維持・ミックスダブルスなら相手へ）と `LSFE` から導出します。矛盾する場合は明示値を優先し、警告を出します。既定と違うルールでハンマーが動く試合（§6.3）では、`Rules` を知らない読み手のために、各エンドに `hammer=` を書くことを推奨します。
 - そのほかの属性: `powerplay=R|Y`（ミックスダブルスのパワープレイを使った側）、`clockR=MM:SS` / `clockY=MM:SS`（エンド終了時の持ち時間残り）。
 - **氷の変更** `hh=` / `curl=`: そのエンド**から先**の氷の条件。意味は `Ice` タグ（§3）と同じで、`hh` ＝ティーに止まるドローのホッグ間タイム（秒）、`curl` ＝センターラインを狙って投げたティーのドローが止まったときの、狙いの線からの横のずれ（m）。片方だけ書いたときは、もう片方は直前の値のままです。標準の回転数 `turns` は試合で1つで、`Ice` タグにだけ書きます。エンジン固有の倍率 `friction=` `curlx=` を併記してもかまいません。
   - 氷は試合の途中で変わります（序盤はペブルが新しく重い、整氷・温度で速くなる、など）。整氷はエンドの間に行い、計測もエンドごとにするので、エンドの属性にしています。
@@ -145,6 +148,7 @@ Score <red>-<yellow>
     End 5 hammer=R orderY=5,2,3,4
     ```
 - `Score` はそのエンドの得点。コンシード等で投げ切らなかったエンドは `Score X`（両チーム未投球）または `Score 2-X` のように `X` で示します。`Score` 行を省略すると未確定（進行中）です。
+  - `Score` には、そのエンドで数えた点をそのまま書きます。ピンを覆った石に加点する大会（`Rules` の `pin`）では、加点を含めた点です。エンドを取った数で競う試合やスキンズ（`Rules` の `scoring`）でも、`Score` はエンドで数えた点で、勝敗やスキンの取り分は `Score` から導きます（§6.2）。
 - **課題（scenario）属性**: 途中局面から始める記録（「この局面から次の1投を考える」ための切り出し）では、その起点のエンドに次を付けます。**投球エントリを持たずに** 投数・累積スコアを表すためのもので、通常の全記録では不要です。
   - `thrown=<R>-<Y>` … そのエンド開始時点で先攻(R)・後攻(Y)が投げ終えた数（例 `thrown=7-6` なら次は後攻の7投目）
   - `score=<R>-<Y>` … そのエンド**開始時**の累積スコア（本文の `Score` 行＝エンド結果とは別物）
@@ -269,6 +273,7 @@ Anim R0 dur=2.4 0:0.10,30.8 0.5:0.30,4.0 0.8:0.55,0.8 1:0.45,-0.1
 | `x=burn` | バーンストーン（進行中に触れた） | 相手の選択（そのまま／戻す／除く）を `@` に反映。詳細は `; コメント` |
 | `x=reposition` | 審判による石の再配置 | 再配置後の位置を `@` に書く |
 | `x=wrong` | 誤ったストーン／順番の投球 | 処置結果を `@` に。詳細はコメント |
+| `x=time` | 持ち時間切れで投げられなかった石（持ち時間切れでも負けにならず、以後投げられなくなる大会。`Rules` の `timeout=stop`、§6.2） | 盤面は変わらない。Task は `-` で書く（例 `15 R - x=time`）。相手は残りの石を投げ続ける |
 
 例: `5 R T<0 x=fgz ; 相手センターガードを場外 → 復元` の後に処置後の `@`。
 
@@ -279,14 +284,22 @@ Shot by Shot の記録でも分けられないため、まとめて1つのコー
 
 **試合レベルの終了・不戦**（`Termination` タグ）:
 
-値は**試合がどう閉じたか**の4つだけです。**理由は値に持たせず、最終エンドの行のコメントに書きます**。理由の種類は無数にあるので、コードを増やさずに済ませます。
+値は**試合がどう閉じたか**の5つだけです。**理由は値に持たせず、最終エンドの行のコメントに書きます**。理由の種類は無数にあるので、コードを増やさずに済ませます。
 
 | 値 | 意味 | 勝敗 |
 |---|---|---|
-| `Normal` | 規定エンドを投げ切った（既定。省略可） | 合計得点 |
+| `Normal` | 規定エンドを投げ切った（既定。省略可） | 合計得点（`Rules` の `scoring` が `stones` 以外なら、その数え方。§6.2） |
 | `Concede` | 一方が投了した | 投了した側の相手の勝ち |
 | `Stopped` | 規定エンドを待たずに打ち切った | **打ち切った時点の合計得点。同点なら引き分け** |
 | `Forfeit` | 投球以外の理由で勝敗が決まった（不戦・失格・持ち時間切れ） | `Result` タグが正 |
+| `Shootout` | 同点で終わり、シュートアウトで勝者を決めた | `Shootout` タグの距離 |
+
+**シュートアウト**は、延長エンドの代わりに、ボタンへのドロー（ドロー・トゥ・ザ・ボタン）で勝者を決める方式です（Grand Slam of Curling、Rock League など。§6.3）。同点のときにどう決めるかは `Rules` の `tie` で宣言します（§6.2）。
+
+- `Termination "Shootout"` と `Shootout` タグを書きます。`Result` は同点の得点のまま（例 `"4-4"`）で、`Score` 行も延長エンドを作らずに規定エンドで終えます。
+- `Shootout` タグには、投げた順に `<側> <距離 cm>` を `;` で並べます（§3）。各チームの1投ずつを1組と読み、距離の短いほうが勝ちです。距離が等しい組（ピンを両チームとも覆った、など）は次の組で決めます。
+- 例（黄が先に投げ、赤が勝った）: `[Shootout "Y 41.0; R 23.5"]`。両チームともピンを覆い、2組目で決めた: `[Shootout "R 0; Y 0; R 12.0; Y 30.1"]`
+- シュートアウトの1投ずつの配置・運動量（③④）を本文に書く書き方は、まだ定めていません（将来の拡張。§4.5 の先頭語の規則で、知らない行は保持して無視されます）。
 
 - `Concede` / `Stopped` / `Forfeit` では、投げなかったエンドは `Score X`（両者未投）または `Score 2-X` のように `X` で示します。`Result` には決着スコアを書きます。
 - **投了したエンドの得点**は World Curling の規則（R12(i)）に従います。両チームに投げる石が残っていれば `X`。一方だけが投げ終えていて、まだ投げる石が
@@ -307,8 +320,8 @@ Score 1-0
 
 - 理由は何でも構いません（時間制限、設備の故障、天候、対戦相手の欠場など）。読み手は `Termination` で進行の扱いを決め、理由はコメントとして表示します。
 - 持ち時間切れ（時間切れ負け）は `Forfeit` です。負けが確定する終わり方なので `Stopped` ではありません。
-- ブランクエンド: `Score 0-0`（ハンマー維持）。
-- 延長エンド: 規定エンドを超える `End n` をそのまま続ける（`Ends` は規定数、実際は超えてよい）。
+- ブランクエンド: `Score 0-0`。次のエンドのハンマーは `Rules` の `blank` に従う（既定は4人制なら維持、ミックスダブルスなら相手へ）。
+- 延長エンド: 規定エンドを超える `End n` をそのまま続ける（`Ends` は規定数、実際は超えてよい）。延長の回数に上限がある大会や、延長をせずにシュートアウト・引き分けにする大会は `Rules` の `tie` で書く（§6.2）。
 - 引き分け: `Termination "Stopped"` で同点のまま終わった試合は引き分けです（`Result "4-4"`）。`Termination` に引き分け用の値は設けません。終わり方と結果は別の軸だからです。
 
 **進行中・未確定**: `Score` 行を省略するとそのエンドは未確定（ライブ記録の途中）。
@@ -338,16 +351,16 @@ Score 1-0
 ## 6. 導出規則
 
 1. **投球側**: `End` の `hammer` から、1投目はハンマーでない側。以降交互。`R`/`Y` を明示した行はそれに従い、次の省略行は「投球数が少ない側」が投げます。
-2. **ハンマー**: `LSFE` → 各 `Score` で得点した側の相手。ブランク（0-0）は維持。`X` を含むエンドでは変化なし。
+2. **ハンマー**: `LSFE` → 各 `Score` で得点した側の相手。ブランク（0-0）は `Rules` の `blank` に従います（§6.2）。既定は、4人制では維持。ミックスダブルスでは、そのエンドで先に投げたチームが次のエンドの置き石の位置を決め（R17(g)III）、ふつうはその権利でハンマーを取るので、相手へ移るとみなします（計測で同等と判定されたブランクは決める権利が変わらないので維持）。`X` を含むエンドでは変化なし。`hammer=` が書かれていればそれが正です。
 3. **投者**: 4人制は `Stones` を `Players` の人数で割った投数ずつ順番に。割り切れないときは先の人から多く（4人なら2投ずつ、3人なら 3・3・2）。ミックスダブルスは 1-2-2-2-1（1人目が1・5投目）。`orderR=` / `orderY=` のあるエンドから先はその順（§4.1）。`p=` があれば優先。
 4. **評価%**: `Points × 25`。チーム／選手の成功率は `Σpoints ÷ (4 × 対象ショット数)`。`-` と `X` は分母に含めない。
-5. **最終得点**: `Score` の合計。`Result` タグと食い違えば `Result` を優先して警告。
+5. **最終得点と勝敗**: `Score` の合計。勝敗は合計得点で決まり、`Rules` の `scoring` が `stones` 以外の試合ではその数え方で決めます（§6.2）。`Termination "Shootout"` の試合は `Shootout` タグの距離で勝者を決めます（§4.6）。`Result` タグと食い違えば `Result` を優先して警告。
 
 ### 6.1 年代・形式ごとの既定ルール
 
-`FGZ` / `NoTick` タグが無いとき、`Date` と `Format` から当時の規則を当てます。基準は **World Curling（国際大会）の適用時期**です。国内大会・クラブで異なる場合はタグで明示してください。
+`FGZ` / `NoTick` タグが無いとき、`Date` と `Format` から当時の規則を当てます。基準は **World Curling（国際大会）の適用時期**です。国内大会・クラブ・プロツアーで異なる場合はタグで明示してください（プロツアーの例は §6.3）。`Rules` の各キーの既定（§6.2）は、年代によらず World Curling の規則です。
 
-**4人制・車いす**（`Format` が `Team` / `Wheelchair`）
+**4人制・車いす・男女混合の4人制**（`Format` が `Team` / `Wheelchair` / `Mixed`）
 
 | 期間 | `FGZ` | `NoTick` | 根拠 |
 |---|---|---|---|
@@ -358,7 +371,7 @@ Score 1-0
 
 カナダ国内選手権だけは 1993-94〜2001-02 が **3ロック**でした（2002-03 に4ロックへ統一）。国際基準とずれるので年代の既定にはせず、`FGZ "3"` と明示して使ってください。
 
-**ミックスダブルス**（`Format` が `MixedDoubles`）は年代によらず次の値です。
+**ミックスダブルス・車いすのミックスダブルス**（`Format` が `MixedDoubles` / `WheelchairMixedDoubles`）は年代によらず次の値です。
 
 | `FGZ` | `NoTick` | 根拠 |
 |---|---|---|
@@ -373,6 +386,84 @@ Score 1-0
 - **ノーティック（R7）**: 6投目の投球前に、FGZ 内でセンターラインに接している**相手**の石を、ラインから外す／FGZ の外へ動かしたら違反。処置は**違反されなかった側の選択**（①投球石を除いて戻す ②そのまま）。場外まで出した場合は R6(b) の処置になります。**ミックスダブルスと車いすには適用されません。**
 
 PCN には投球をそのまま書き、結果は再生側が判定します。再生側は違反時に①（戻す）を選ぶ実装で構いません。記録済みの試合を再生するときは、判定を当てずに記録の `@` 配置をそのまま使うことを推奨します（当時の判定は記録に反映済みで、推定物理で判定し直すと誤検出になるため）。違反が記録に残っている場合は `x=fgz` / `x=notick`（§4.6）で明示できます。
+
+守り方そのものを変える大会（場内で動かすのも禁じる、自分の石も守る、など）は、`Rules` の `fgzmove` / `fgzsides` / `fgzzone` で書きます（§6.2）。
+
+### 6.2 ルールの指定（`Rules`）
+
+World Curling の規則と違うルールで行う試合は、`Rules` タグで違いを宣言します。
+
+```
+[Rules "blank=keep1 tie=shootout"]
+```
+
+- 値は `key=value` を空白で区切って並べます。キーは英小文字、値に空白は含めません。順序は任意で、同じキーは1回だけ書きます。
+- 書かないキーは既定値（World Curling の規則。下の表）です。`Rules` タグが無い試合は、すべて既定値です。
+- 規定のエンド数・投数・形式・FGZ の数・ノーティックは、これまでどおり `Ends` / `Stones` / `Format` / `FGZ` / `NoTick` のタグで書きます。`Rules` はそれ以外の違いを受け持ちます。
+
+**読み手の扱い**
+
+1. **記録が正** — `Score`・`hammer=`・`@`・`Result`・`Termination`・`Shootout` は `Rules` より優先します。`Rules` は、省いた値の導出（ハンマー・勝敗）、記録の照合（盤面から数えた点と `Score`）、再生側の判定（違反の自動判定など）に使います。
+2. **知らないキー・値は保持して無視** — 読み込みは止めず、知らないルールがあることを利用者に知らせます（警告）。書き出すときは、知らないキーもそのまま残します。
+3. **書き手は記録を明示する** — 既定と違うルールでハンマーや勝敗が動く試合では、各エンドの `hammer=` と、`Result`・`Termination` を書きます。`Rules` を知らない読み手でも、記録を正しく読めるようにするためです。
+
+**キー**
+
+| キー | 値 | 既定 | 意味 |
+|---|---|---|---|
+| `blank` | `keep` / `switch` / `keep<N>` | 4人制は `keep`、ミックスダブルスは `switch` | ブランクエンド（0-0）のあとのハンマー。`keep`＝維持。`switch`＝相手へ（ミックスダブルスでは置き石の位置を決める権利が移る。§6 の2）。`keep<N>`＝ハンマーを持つチームのブランクは、試合を通して（延長を含む）各チーム N回までは維持し、N+1回目から相手へ移る |
+| `tie` | `extra` / `extra<N>` / `shootout` / `draw` を `+` でつなぐ | `extra` | 規定エンドで同点のときの決め方を、使う順に並べる。`extra`＝決着まで延長エンド。`extra<N>`＝延長エンドを N回まで。`shootout`＝シュートアウト（§4.6）。`draw`＝引き分けで終える。例 `extra1+shootout`＝延長1回で決まらなければシュートアウト |
+| `scoring` | `stones` / `ends` / `skins` | `stones` | 勝敗の数え方。`stones`＝合計得点。`ends`＝取ったエンドの数（マッチプレー）。`skins`＝取ったスキンの値の合計。エンドを「取る」条件は `win` |
+| `win` | 1以上の整数 | `1` | `scoring` が `ends` / `skins` のとき、ハンマーを持つチームがエンド（スキン）を取るのに要る点。ハンマーを持たないチームは、点を取れば（スチール）取る。どちらも満たさないエンドは「プッシュ」で、だれも取らない |
+| `skins` | エンドごとの値を `,` で並べる | なし | `scoring=skins` のスキンの値。並べた数より後のエンド（延長）は最後の値。取られなかったスキンは次のエンドへ持ち越し、次に取ったチームが持ち越し分も合わせて得る |
+| `pin` | `<点>@<エンド>` | なし | 指定のエンドで、数える石のうちピン（ティーの中心の穴）を覆う石を `<点>` と数える（ふつうは1点）。`<エンド>` は `last`（規定の最終エンド）・`all`・エンド番号の `,` 区切り。例 `pin=2@last` |
+| `fgzmove` | `out` / `any` | `out` | FGZ で守る石について禁じること。`out`＝場外へ出すこと（R6・R17(e)）。`any`＝動かすこと（場内で動かすのも違反） |
+| `fgzsides` | `opp` / `all` | 4人制は `opp`、ミックスダブルスは `all` | 守る石。`opp`＝相手の石（R6）。`all`＝両チームのすでに投げた石と置き石（R17(e)） |
+| `fgzzone` | `fgz` / `play` | 4人制は `fgz`、ミックスダブルスは `play` | 守る石の位置。`fgz`＝フリーガードゾーン（プレー側のティーラインとホッグラインの間、ハウスを除く）。`play`＝場内のどこでも（R17(e)） |
+| `notickends` | `all` / `last` / エンド番号の `,` 区切り | `all` | `NoTick` が効くエンド。`last`＝規定の最終エンドと延長エンド |
+| `timeout` | `forfeit` / `stop` | `forfeit` | 持ち時間を使い切ったとき。`forfeit`＝その試合は負け（`Termination "Forfeit"`）。`stop`＝それ以後そのチームは投げられない（投げなかった石は Task `-` に `x=time`。§4.6）。相手は残りの石を投げ続ける |
+
+**得点と勝敗の数え方**（`scoring`・`win`・`skins`・`pin`）
+
+- `Score` 行には、どの数え方でも**そのエンドで数えた点**を書きます（`pin` の加点を含む。§4.1）。
+- `scoring=ends` / `skins` の勝敗は、`Score` とそのエンドのハンマーから導きます。ハンマーを持つチームが `win` 点以上を取ればそのチームが、ハンマーを持たないチームが点を取ればそのチームが、エンド（スキン）を取ります。
+- `Result` には、その試合の数え方での結果を書きます（`stones` は合計得点、`ends` は取ったエンドの数、`skins` は取ったスキンの値の合計）。
+
+**キーの増やし方**
+
+ルールは大会・リーグ・年で変わり続けます。新しいルールは、この表にキーを足して受け止めます。すでにあるキーの意味は変えません（意味を変えたいときは新しいキーを作ります）。キーで書けないルールに出会ったら、まず `; コメント` に書いておき、キーの追加を提案してください。
+
+### 6.3 大会ごとの変則ルール
+
+プロツアーやリーグには、World Curling の規則と違うルールで行う大会があります。§6.2 のキーで、次のように書きます。
+
+- 値は大会・年・ラウンドで変わります。**記録する試合の要項で確かめて**書いてください。下の表は 2026年10月時点で確かめた値です。
+- 既定と同じキーは省いています。
+- ハンマーや勝敗が既定と違う動きをする試合では、§6.2 の「書き手は記録を明示する」に従って `hammer=`・`Result`・`Termination` を書きます。
+
+**Grand Slam of Curling（GSOC）**
+
+| 時期・大会 | 書き方 | 備考 |
+|---|---|---|
+| 2026-27 シーズン（GSOC Invitational） | `[Ends "8"]` `[FGZ "5"]` `[NoTick "true"]` `[ThinkingTime "29:00"]` `[Rules "blank=keep1 tie=shootout"]` | 予選・タイブレーク・準々決勝はシュートアウト、準決勝と決勝は延長エンド（`tie` を省く）。タイムアウトは60秒×2 |
+| 2025-26 シーズン | `[Ends "8"]` と `[Rules "blank=keep1 tie=shootout"]` など | シュートアウトは Masters の予選から始まり、Tour Challenge と Tahoe ではプレーオフにも広げ、Canadian Open と Players' Championship ではタイブレーク・プレーオフを延長エンドに戻した。ブランクの制限は Tour Challenge から。大会・ラウンドごとに `tie` を確かめる |
+| 2014〜2018年ごろ | `[FGZ "5"]` を明示 | World Curling より先に5ロックを採っていた。年代の既定（§6.1）では4になるため |
+| 2019 Champions Cup | `[NoTick "true"]` `[Rules "notickends=last"]` | ノーティックを第8エンドと延長エンドだけに試した |
+| Elite 10（2015〜2019年ごろ。マッチプレー） | `[Ends "8"]` `[FGZ "5"]` `[NoTick "true"]` `[ThinkingTime "4:00/end"]` `[Rules "scoring=ends win=2 blank=switch tie=shootout"]` | エンドを取った数で競う。後攻は2点以上、先攻はスチールでエンドを取り、取れなければプッシュでハンマーは相手へ |
+
+**Rock League（2026年の初年度）**
+
+| 試合 | 書き方 | 備考 |
+|---|---|---|
+| 4人制（男子・女子） | `[Ends "7"]` `[FGZ "5"]` `[ThinkingTime "21:00"]` `[Rules "fgzmove=any fgzsides=all blank=keep1 tie=shootout pin=2@last timeout=stop"]` | FGZ の石は、どちらのチームの石も5投目までは動かせない（6投目から動かしてよい）。最終エンドでピンを覆う石は2点。持ち時間を使い切っても負けにならず、以後投げられない。タイムアウトは60秒×3 |
+| ミックスダブルス | `[Format "MixedDoubles"]` `[Ends "8"]` `[ThinkingTime "23:00"]` `[Rules "fgzmove=any fgzzone=fgz tie=shootout pin=2@last timeout=stop"]` | FGZ の石は3投目までは動かせない（4投目から動かしてよい。`FGZ` は既定の `3`）。ブランクはハンマーを失う（既定の `switch`） |
+| 男女混合の4人制（Mixed Fours） | `[Format "Mixed"]` に4人制と同じ `Rules` | 男女が交互に投げる |
+
+シュートアウトは、氷の上のどの選手が投げてもよく、延長エンドだったらハンマーを持つはずのチームが投げる順を選び、同点なら同じ選手がスイープなしで投げ直します。2027年の規則は未公開です（2026年10月時点）。
+
+**スキンズ**（Continental Cup などのスキンズゲーム）
+
+`[Rules "scoring=skins win=2 skins=…"]` と書きます。スキンの値・延長の扱いは大会と年で違うので、`skins` に各エンドの値を並べてください（例 `skins=1,1,2,2,3,3,4,4`。値は例で、実在の大会の値ではありません）。
 
 ## 7. JSON 表現（PCN-JSON）
 
@@ -401,6 +492,7 @@ PCN には投球をそのまま書き、結果は再生側が判定します。�
 - エンドには `powerplay`（`"R"`/`"Y"`/`null`）、`clockR`/`clockY`（文字列）が入ることがある。
 - `board` は `[side, x, y]` の配列、`v` は `[x, y, vx, vy, w]`。
 - `score` の `X` は `null`（例 `{ "red": 2, "yellow": null }`）。
+- `Rules`・`Shootout` もほかのタグと同じく `tags` に文字列のまま入れます（値の解析は実装に委ねます）。ショットの `x` には `"time"` が入ることがあります。
 
 ## 8. 文法（EBNF）
 
@@ -422,6 +514,11 @@ points    = "0"|"1"|"2"|"3"|"4" ;
 nag       = "!" | "?" ;
 kv        = key "=" value ;                                (* value に空白は含まない *)
 comment   = ";" { any } ;
+
+(* タグの値の中の書き方 *)
+rules     = kv { WS kv } ;                                 (* [Rules "…"]。key は英小文字。§6.2 *)
+shootout  = sotry { ";" WS sotry } ;                       (* [Shootout "…"]。投げた順 *)
+sotry     = side WS number [ WS "(" name ")" ] ;          (* 距離 cm。0 = ピンを覆う、199.6 = ハウスの外 *)
 ```
 
 行末の `; コメント` はどの行にも付けられます。大文字小文字は区別します。
@@ -469,6 +566,7 @@ End 3 hammer=R
 5. 生成・フィットした投球は UI 上で「推定」と分かるように表示する（例: `≈` を付ける）。
 6. **記録済みの試合を再生するときは、ルール違反の判定を当てない**。当時の判定は記録に反映済みで、推定物理で判定し直すと誤検出になる（§6.1）。
 7. ライブ記録を読むときは、末尾のエンドに `Score` が無い＝進行中として扱い、行が追記されうる前提で読む。
+8. `Rules` に知らないキー・値があっても、読み込みは止めない。記録（`Score`・`hammer=`・`@`・`Result`・`Termination`・`Shootout`）をそのまま使い、知らないルールがあることを利用者に知らせる（§6.2）。
 
 ## 11. 出典
 
@@ -476,10 +574,12 @@ End 3 hammer=R
 
 | 内容 | 資料 |
 |---|---|
-| 競技規則（投了したエンドの得点 = R12(i)、FGZ = R6、ノーティック = R7、ミックスダブルス = R17、車いす = R14） | *The Rules of Curling and Rules of Competition*, World Curling, 1 September 2026（[一覧](https://worldcurling.org/rules/) ／ [PDF](https://worldcurling.org/wp-content/uploads/2026/08/Rules2026.pdf)） |
+| 競技規則（投了したエンドの得点 = R12(i)、FGZ = R6、ノーティック = R7、ミックスダブルス = R17、車いす = R14） | *The Rules of Curling and Rules of Competition*, World Curling, 1 September 2026（[一覧](https://worldcurling.org/rules/) ／ [PDF](https://worldcurling.org/wp-content/uploads/2026/10/Rules-2026_Clean.pdf)） |
 | ショット種別（Task）・回転（Handle）・評価（Points）の定義 | *Curling Statistics: How to Score*, © World Curling and CURLIT Ltd., 2025（[PDF](https://curlit.com/powerpoint/StatsTraining_2025_2026.pdf)） |
 | ②③層の元データ（Shot by Shot・配置図） | World Curling Live Scores（`livescores.worldcurling.org`）／ CURLIT Results Book（`curlit.com`） |
 | FGZ の成立と各国の導入時期 | Curling Canada「History of Curling」、World Curling の年次発表（2017年9月総会の5ロック決定、2022年のノーティック試行） |
+| Grand Slam of Curling の変則ルール（§6.3） | thegrandslamofcurling.com の「Eight Ends」連載（[2026 GSOC Co-op Invitational](https://www.thegrandslamofcurling.com/news/eight-ends-everything-you-need-to-know-for-the-2026-gsoc-co-op-invitational)、[ルール変更の統計](https://www.thegrandslamofcurling.com/news/eight-ends-intriguing-stats-from-gsocs-rule-changes)）、[マッチプレーのルール](https://thegrandslamofcurling.com/match-play-rules)、TSN「Grand Slam of Curling continues to tweak shootout, extra end experiment」（2025-12） |
+| Rock League の変則ルール（§6.3） | Rock League「[Format](https://rockleague.com/format)」（2026年の規則）、「[Eight Ends: The lowdown on Rock League's format and rules](https://rockleague.com/posts/eight-ends-the-lowdown-on-rock-leagues-format-and-rules)」 |
 
 規則の引用箇所（2026年9月1日版）:
 
@@ -487,6 +587,7 @@ End 3 hammer=R
 - **R7**「6投目の投球前に、FGZ 内でセンターラインに接している相手の石をライン外／FGZ 外へ動かした場合、違反されなかった側が『除いて戻す』か『そのまま』を選ぶ。**車いす・ミックスダブルスには適用しない**」
 - **R17(e)**「4投目の投球前に、投じた石が直接・間接に、**すでに投げた石または置き石**を場外へ動かした場合、投じた石を除き、動いた石を戻す」
 - **R17(c)(d)**「1試合8エンド、1エンド1チーム5投。第1投を投げた選手が最終投も投げ、もう一方が第2〜4投を投げる」
+- **R17(g)III**「どちらのチームも得点しなかったエンドのあとは、そのエンドで第1投を投げたチームが次のエンドの置き石の位置を決める。計測で同等と判定されたブランクでは、決める権利は変わらない」
 
 ## 12. 変更履歴
 
@@ -494,6 +595,7 @@ End 3 hammer=R
 
 | 文書 | 日付 |
 |---|---|
+| 草案 第7版 | 2026-10-16（変則ルールの宣言 `Rules` タグ〔§6.2〕と大会ごとの書き方〔§6.3。Grand Slam of Curling・Rock League・スキンズ〕、シュートアウト〔`Termination "Shootout"`・`Shootout` タグ〕、持ち時間切れで投げなかった石 `x=time`、`Format` に `WheelchairMixedDoubles` と `Mixed`、`FGZ` を 0〜15の整数に、`ThinkingTime` に1エンドごとの書き方。ミックスダブルスのブランクのあとのハンマーを明文化〔R17(g)III〕。これまでのファイルの意味は変わらない） |
 | 草案 第6版 | 2026-09-29（2026-10-08 に規則の引用を2026年9月1日版へ。投了したエンドの得点は R12(i) に移った。形式の変更なし） |
 | 草案 第5版 | 2026-09-04 |
 | 草案 第4版 | 2026-09-01 |
@@ -503,7 +605,7 @@ End 3 hammer=R
 
 ## Quick reference (English)
 
-- Header tags `[Key "Value"]`: `PCN`, `Event`, `Site` (city, country), `Venue` (building), `Date` (YYYY.MM.DD), `Stage`, `Sheet`, `Red`, `Yellow`, `RedPlayers`/`YellowPlayers` (`;`-separated, throwing order), `Format` (Team|MixedDoubles|Wheelchair), `Ends`, `Stones`, `FGZ` (0|3|4|5, default by date **and format**), `NoTick` (true|false, default by date and format; never in mixed doubles or wheelchair), `ThinkingTime`, `SheetWidth` (m), `Ice` ("hh=<hog-to-hog seconds of a tee draw> curl=<metres the same draw, aimed down the centre line, ends up off the aim line> turns=<standard turns per delivery, default 5>"), `LSFE` (Red|Yellow), `LSD`, `Result` ("r-y"), `Termination` (Normal|Concede|Stopped|Forfeit; the reason goes in the final end's comment), `Engine`, `Source`.
+- Header tags `[Key "Value"]`: `PCN`, `Event`, `Site` (city, country), `Venue` (building), `Date` (YYYY.MM.DD), `Stage`, `Sheet`, `Red`, `Yellow`, `RedPlayers`/`YellowPlayers` (`;`-separated, throwing order), `Format` (Team|MixedDoubles|Wheelchair|WheelchairMixedDoubles|Mixed), `Ends`, `Stones`, `FGZ` (integer 0–15, default by date **and format**), `NoTick` (true|false, default by date and format; never in mixed doubles or wheelchair), `Rules` ("key=value …" rule variations from World Curling's rules: `blank`, `tie`, `scoring`, `win`, `skins`, `pin`, `fgzmove`, `fgzsides`, `fgzzone`, `notickends`, `timeout`; see §6.2 and the Grand Slam / Rock League examples in §6.3), `ThinkingTime` (or per end, "4:00/end"), `SheetWidth` (m), `Ice` ("hh=<hog-to-hog seconds of a tee draw> curl=<metres the same draw, aimed down the centre line, ends up off the aim line> turns=<standard turns per delivery, default 5>"), `LSFE` (Red|Yellow), `LSD`, `Result` ("r-y"), `Termination` (Normal|Concede|Stopped|Forfeit|Shootout; the reason goes in the final end's comment), `Shootout` ("R 23.5; Y 41.0", cm in throwing order), `Engine`, `Source`. A stone not thrown because the team ran out of time is `- x=time`.
 - Body: `End n [hammer=R|Y] [powerplay=R|Y] [clockR=MM:SS clockY=MM:SS] [hh=sec curl=m] [orderR=k,k,… orderY=k,k,…]` (ice and throwing order from that end on; reserves are numbered after `Players`), optional `Setup` + board line for pre-positioned stones, shot lines `n [R|Y] TASK[>|<][0-4][!?] [p=k] [t=sec] [v=x,y,vx,vy,w] [est] ; comment`, optional board line `@ Rx,y Yx,y ...` after a shot, `Score r-y` (X = unplayed).
 - Tasks follow the World Curling / CURLIT statisticians' codes: D Draw, F Front, G Guard, R Raise, W Wick/Split, Z Freeze, T Take-out, H Hit and Roll, C Clearing, S Double Take-out, P Promotion Take-out, `-` Through, `X` Not considered, `?` Unspecified (task not yet assigned; a reproducer fits without a task hint and may classify it from the board). Handle: `>` clockwise (in-turn), `<` counter-clockwise (out-turn). Points 0–4 = 0–100%.
 - Rules and statistics follow World Curling's *The Rules of Curling* (R6 FGZ, R7 no-tick, R17 mixed doubles) and the CURLIT statisticians' manual — see §11 for sources. This document is unofficial and not affiliated with World Curling or CURLIT.

@@ -1,0 +1,46 @@
+; Rule variations of the Grand Slam kind (spec §6.2, §6.3): eight ends, each team may blank only once
+; (a second blank by the hammer team passes the hammer), and a game tied after eight ends is decided
+; by a draw-to-the-button shootout instead of an extra end. Everything is fictional.
+; Under these rules the hammer can move differently from the defaults, so every end states hammer=.
+[PCN "1.0"]
+[Event "Example Slam"]
+[Date "2026.??.??"]
+[Stage "Round Robin"]
+[Red "Red"]
+[Yellow "Yellow"]
+[Ends "8"]
+[FGZ "5"]
+[NoTick "true"]
+[ThinkingTime "29:00"]
+[Rules "blank=keep1 tie=shootout"]
+[LSFE "Yellow"]
+[Result "3-3"]
+[Termination "Shootout"]
+[Shootout "R 0; Y 0; R 41.2; Y 23.5"]
+
+End 1 hammer=Y
+Score 0-0 ; yellow's first blank: yellow keeps the hammer
+
+End 2 hammer=Y
+Score 0-2
+
+End 3 hammer=R
+Score 0-0 ; red's first blank: red keeps the hammer
+
+End 4 hammer=R
+Score 0-0 ; red's second blank: the hammer passes to yellow (blank=keep1)
+
+End 5 hammer=Y
+Score 1-0 ; red steals one
+
+End 6 hammer=Y
+Score 0-1
+
+End 7 hammer=R
+Score 2-0
+
+End 8 hammer=Y
+Score 0-0 ; tied 3-3 after eight ends: no extra end (tie=shootout)
+
+; Shootout: both teams covered the pin in the first round (0 and 0), so a second round was thrown.
+; Yellow's 23.5 cm beat red's 41.2 cm: yellow wins, and Result keeps the tied score.

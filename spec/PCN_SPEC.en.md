@@ -1,6 +1,6 @@
 # PCN — Portable Curling Notation, specification v1.0 (draft)
 
-**Format 1.0 | Document: draft, 6th revision | Last updated 2026-09-29 | Status: draft**
+**Format 1.0 | Document: draft, 7th revision | Last updated 2026-10-16 | Status: draft**
 
 *This is the English edition of [PCN_SPEC.md](PCN_SPEC.md). The Japanese text is the reference; where the two differ, the Japanese edition prevails. Section numbers match.*
 
@@ -32,6 +32,7 @@ Rules and statistical symbols follow the public material of World Curling / CURL
 3. **Line-oriented and appendable** — one shot per line. Works with `grep` and spreadsheets, and diffs are readable. Because the file reads top to bottom, appending a line per throw gives a live record (an end without a `Score` line is in progress).
 4. **Contain existing records rather than replace them** — public records (linescores, World Curling / CURLIT Shot by Shot, coaching-app CSV, simulator logs) each fit one of the layers ①–④. Curling has no public notation comparable to PGN or PDN, so being a container for existing material is a priority.
 5. **Implicit values only where derivable** — throwing order (first/second) and thrower position follow from the rules and may be omitted; only exceptions (a skip throwing lead stones etc.) are written explicitly.
+6. **World Curling’s rules by default; differences are declared** — the default rules are World Curling’s *Rules of Curling*. Variations used by professional tours and leagues (a limit on blank ends, shootouts, other ways of scoring, and so on) are declared with the `Rules` tag (§6.2, §6.3). Rules are used to derive omitted values and to check the record; **what the record says (`Score`, `hammer=`, `@`) always wins**. A reader that does not know a rule can still read the record as written.
 
 ## 2. Overall structure
 
@@ -102,16 +103,18 @@ One `[Key "Value"]` per line. Inside a value, `"` is written `\"` and `\` is wri
 | `RedSub` / `YellowSub` | | In-game substitutions (optional), e.g. `"E6 TANAKA for SUZUKI Y"`, `;`-separated. Display metadata only; who throws after a substitution is given by the `End` attributes `orderR=` / `orderY=` (§4.1) or per shot with `p=` |
 | `Ends` | | Scheduled ends. World Curling championships `10`, mixed doubles `8` (R17(c)). Default `10`; write it explicitly for 8-end games |
 | `Stones` | | Stones per team per end (default `8`, mixed doubles `5`) |
-| `Format` | | `Team` (default) / `MixedDoubles` / `Wheelchair`. Mixed doubles: `Stones` defaults to 5, throwing order 1-2-2-2-1 (R17(d)), pre-positioned stones written in each end's `Setup` (R17(f)). `Wheelchair` plays like the four-player game (no sweeping) and is treated the same way here; it affects rule defaults (§6.1) |
-| `FGZ` | | Number of protected stones `0` / `3` / `4` / `5`. Default from `Date` and `Format` (§6.1). Mixed-doubles `3` is a different rule from four-player FGZ (§6.1) |
-| `NoTick` | | `true` / `false`. Opponent FGZ stones on the centre line may not be moved off the line (from 2022-23). **Does not apply to mixed doubles or wheelchair** (R7). Default from `Date` and `Format` |
-| `ThinkingTime` | | Thinking time (`"38:00"` for 10 ends, `"30:00"` for 8, `"22:00"` mixed doubles) |
+| `Format` | | `Team` (default) / `MixedDoubles` / `Wheelchair` / `WheelchairMixedDoubles` / `Mixed`. Mixed doubles: `Stones` defaults to 5, throwing order 1-2-2-2-1 (R17(d)), pre-positioned stones written in each end's `Setup` (R17(f)). `Wheelchair` plays like the four-player game (no sweeping) and is treated the same way here. `WheelchairMixedDoubles` is wheelchair mixed doubles and plays like mixed doubles. `Mixed` is four-player mixed curling with two men and two women (R16) and plays like `Team`. Every value affects rule defaults (§6.1) |
+| `FGZ` | | Number of stones during which the protection applies (an integer `0`–`15`; `5` protects through the 5th stone, and stones may be removed from the 6th). World Curling uses `5` for four-player games and `3` for mixed doubles. Default from `Date` and `Format` (§6.1). Mixed-doubles `3` protects different stones from four-player FGZ (§6.1). Events that protect stones differently write it with `fgzmove` / `fgzsides` / `fgzzone` in `Rules` (§6.2) |
+| `NoTick` | | `true` / `false`. Opponent FGZ stones on the centre line may not be moved off the line (from 2022-23). **Does not apply to mixed doubles or wheelchair** (R7). Default from `Date` and `Format`. Events that apply it only in some ends write `notickends` in `Rules` (§6.2) |
+| `Rules` | | Rules that differ from the defaults (World Curling’s rules), `"key=value key=value …"`: the hammer after a blank end, how a tie is decided, how the game is scored, how FGZ stones are protected, what happens when a team runs out of time, and so on. Keys and defaults in §6.2; how particular events are written in §6.3 |
+| `ThinkingTime` | | Thinking time (`"38:00"` for 10 ends, `"30:00"` for 8, `"22:00"` mixed doubles). Time given per end is written `"4:00/end"` |
 | `SheetWidth` | | Sheet width in metres (default `4.75` = World Curling maximum; existing facilities may be as narrow as `4.42` (R1); narrow club sheets e.g. `4.28` = 14 ft 2 in) |
 | `Ice` | | Ice conditions `"hh=13.8 curl=1.2 turns=5"`. `hh` = hog-to-hog time in seconds of a draw stopping on the tee, `curl` = how far a draw to the tee, released straight along the centre line as its aim, **ends up to the side of the aim line when it stops**, in metres (the total curl from release to rest, measured to the centre of the stopped stone), `turns` = the standard number of turns (how many times a stone rotates from release until it stops; 5 if omitted). `curl` is the value for a draw thrown with `turns` turns (some engines curl differently with the number of turns). Video often measures only the part after the far (house-end) hog line; that value is smaller than `curl` because it leaves out the curl before it, so convert it rather than writing it as is. Players calibrate friction and curl to match `hh` and `curl`, and use `turns` for the rotation of deliveries whose rotation is not given (those a reproducer fills in). Engine-specific multipliers `friction=` `curlx=` may be added |
 | `LSFE` | | Team with the hammer (last stone) in end 1: `Red` / `Yellow` |
 | `LSD` | | Last stone draw `"Red 286.3; Yellow 199.6"` (cm; outside the house = 199.6) |
-| `Result` | | Final score `"Red-Yellow"` (e.g. `"5-0"`). In progress / unknown: `"*"` |
-| `Termination` | | How the game closed. `Normal` (all scheduled ends played; default) / `Concede` / `Stopped` (cut short before the scheduled ends) / `Forfeit` (no-show, disqualification, out of time). **The reason is not part of the value; write it as a comment on the final end's line** (§4.6) |
+| `Result` | | Final score `"Red-Yellow"` (e.g. `"5-0"`). In progress / unknown: `"*"`. A game decided by a shootout keeps the tied score (e.g. `"4-4"`; the winner is derived from `Shootout`) |
+| `Termination` | | How the game closed. `Normal` (all scheduled ends played; default) / `Concede` / `Stopped` (cut short before the scheduled ends) / `Forfeit` (no-show, disqualification, out of time) / `Shootout` (tied, then decided by a shootout). **The reason is not part of the value; write it as a comment on the final end's line** (§4.6) |
+| `Shootout` | | Result of a shootout (a draw to the button that decides the winner), `"R 23.5; Y 41.0"`: `<side> <distance in cm>` in throwing order, `;`-separated. Distance from the tee to the centre of the stone, measured as for `LSD`; a stone covering the pin so that it cannot be measured is `0`, outside the house is `199.6`. The thrower may follow in parentheses (`R 23.5 (FUJISAWA S)`). If a round is tied and thrown again, keep listing (§4.6) |
 | `Timeout` | | Time-outs (optional), `;`-separated "team, end, before which of that team's stones" (counted per team, 1–8 or 1–5 in mixed doubles, not the shot number within the end; the same count as "CHN stone 8" in Results Books. Extra ends use their end number, or `EE`), e.g. `"Y E6 before 5; R E11 before 3"`. Several are possible (one per team per end plus one each in extra ends). A `; time-out` comment on the shot line is also fine (§4.6) |
 | `Engine` | | Identifier of the deterministic engine that replays layer ④, as `name/version` (e.g. `"myengine/1"`). Required when `v=` is written |
 | `Source` | | Source (URL etc.) |
@@ -129,7 +132,7 @@ Score <red>-<yellow>
 ```
 
 - `n` starts at 1. Extra ends continue the numbering (11, 12 …); showing `EE` is up to the player.
-- `hammer=` may be omitted; it is then derived from the previous end (the team that did not score gets the hammer; a blank keeps it) and from `LSFE`. If they conflict, the explicit value wins with a warning.
+- `hammer=` may be omitted; it is then derived from the previous end (the team that did not score gets the hammer; after a blank end it follows `blank` in `Rules`, by default kept in four-player games and passed to the other team in mixed doubles) and from `LSFE`. If they conflict, the explicit value wins with a warning. In games where the hammer moves under non-default rules (§6.3), writing `hammer=` on every end is recommended, for readers that do not know `Rules`.
 - Other attributes: `powerplay=R|Y` (mixed doubles power play), `clockR=MM:SS` / `clockY=MM:SS` (thinking time left at the end of the end).
 - **Change of ice** `hh=` / `curl=`: ice conditions **from that end on**, with the same meaning as the `Ice` tag (§3): `hh` = hog-to-hog time of a draw to the tee (s), `curl` = how far a draw to the tee aimed down the centre line ends up off the aim line when it stops (m). If only one is written, the other keeps its previous value. The standard number of turns `turns` is one per game and is written only in the `Ice` tag. The engine-specific multipliers `friction=` `curlx=` may be added.
   - Ice changes during a game (heavier early while the pebble is fresh, faster after scraping or as the temperature changes, and so on). Scraping happens between ends, and measurements are taken end by end, so this is an end attribute.
@@ -147,6 +150,7 @@ Score <red>-<yellow>
     End 5 hammer=R orderY=5,2,3,4
     ```
 - `Score` is the score of that end. An end not played to completion (concession etc.) is written `Score X` (neither team threw) or `Score 2-X`. Omitting `Score` means the end is not yet decided (in progress).
+  - `Score` is the points counted in that end as they stand. In events that add points for a stone covering the pin (`pin` in `Rules`), it includes the bonus. In games decided by ends won or by skins (`scoring` in `Rules`), `Score` is still the points counted in the end, and the game result or the skins are derived from it (§6.2).
 - **Scenario attributes**: a record that starts mid-game (a position "to think about the next shot") adds the following to its starting end. They express shot counts and cumulative score **without shot entries**, and are not needed in a full record.
   - `thrown=<R>-<Y>` … stones already thrown by first (R) and second (Y) at the start of the end (e.g. `thrown=7-6` means the next shot is the hammer team's 7th)
   - `score=<R>-<Y>` … cumulative score **at the start** of the end (distinct from the `Score` line = result of the end)
@@ -271,6 +275,7 @@ Two principles: **outcomes are expressed by the `@` board** (which can represent
 | `x=burn` | Burned stone (touched while moving) | The opponent's choice (leave / restore / remove) reflected in `@`. Details in a `; comment` |
 | `x=reposition` | Stones repositioned by an umpire | The repositioned board in `@` |
 | `x=wrong` | Wrong stone or wrong order | Result of the ruling in `@`; details in a comment |
+| `x=time` | A stone not thrown because the team ran out of thinking time (in events where running out of time does not lose the game but stops the team from throwing: `timeout=stop` in `Rules`, §6.2) | The board does not change. Write the task as `-` (e.g. `15 R - x=time`). The other team keeps throwing its remaining stones |
 
 Example: `5 R T<0 x=fgz ; opponent centre guard removed → restored`, followed by the post-ruling `@`.
 
@@ -281,14 +286,22 @@ hog line and being removed (without the code, a shooter that vanished without ch
 
 **Game-level termination and forfeits** (`Termination` tag):
 
-The value only says **how the game closed**, in four ways. **The reason is not in the value; it goes in a comment on the final end's line.** Reasons are endless, so no codes are added for them.
+The value only says **how the game closed**, in five ways. **The reason is not in the value; it goes in a comment on the final end's line.** Reasons are endless, so no codes are added for them.
 
 | Value | Meaning | Winner |
 |---|---|---|
-| `Normal` | All scheduled ends played (default; may be omitted) | Total score |
+| `Normal` | All scheduled ends played (default; may be omitted) | Total score (or, when `scoring` in `Rules` is not `stones`, that way of scoring; §6.2) |
 | `Concede` | One team conceded | The other team |
 | `Stopped` | Cut short before the scheduled ends | **Score at the stop; a tie is a draw** |
 | `Forfeit` | Decided by something other than play (no-show, disqualification, out of time) | The `Result` tag |
+| `Shootout` | Ended tied and was decided by a shootout | The distances in the `Shootout` tag |
+
+A **shootout** decides the winner with a draw to the button instead of extra ends (the Grand Slam of Curling, Rock League and others; §6.3). How a tied game is decided is declared with `tie` in `Rules` (§6.2).
+
+- Write `Termination "Shootout"` and the `Shootout` tag. `Result` keeps the tied score (e.g. `"4-4"`), and the `Score` lines end with the scheduled ends, with no extra end.
+- The `Shootout` tag lists `<side> <distance in cm>` in throwing order, `;`-separated (§3). Read one stone from each team as a round; the shorter distance wins. A round with equal distances (both teams covering the pin, for example) is decided by the next round.
+- Example (yellow threw first, red won): `[Shootout "Y 41.0; R 23.5"]`. Both teams covered the pin and the second round decided it: `[Shootout "R 0; Y 0; R 12.0; Y 30.1"]`
+- A way to write each shootout stone’s position and motion (layers ③ and ④) in the body is not defined yet (a future extension; under the first-word rule in §4.5, unknown lines are kept and ignored).
 
 - With `Concede` / `Stopped` / `Forfeit`, unplayed ends are written `Score X` (neither team threw) or `Score 2-X`. `Result` carries the deciding score.
 - **The score of a conceded end** follows World Curling's rule R12(i). If both teams still have stones to deliver, write `X`. If only one team has delivered
@@ -309,8 +322,8 @@ Score 1-0
 
 - Any reason is acceptable (time limit, facility failure, weather, opponent absent …). Readers decide handling from `Termination` and show the reason as a comment.
 - Running out of thinking time is `Forfeit`, not `Stopped`, because it decides a loser.
-- Blank end: `Score 0-0` (hammer kept).
-- Extra ends: continue `End n` beyond the scheduled count (`Ends` is the schedule; actual ends may exceed it).
+- Blank end: `Score 0-0`. The hammer for the next end follows `blank` in `Rules` (by default kept in four-player games and passed to the other team in mixed doubles).
+- Extra ends: continue `End n` beyond the scheduled count (`Ends` is the schedule; actual ends may exceed it). Events that limit the number of extra ends, or decide a tie by a shootout or a draw instead, write it with `tie` in `Rules` (§6.2).
 - Draw: a game that ended tied with `Termination "Stopped"` is a draw (`Result "4-4"`). There is no dedicated draw value, because how the game ended and the result are separate axes.
 
 **In progress / undecided**: omitting `Score` makes the end undecided (a live record mid-end).
@@ -340,16 +353,16 @@ A shot with `v=` replayed by the deterministic engine named in `[Engine ...]` re
 ## 6. Derivation rules
 
 1. **Throwing side**: from the `End` `hammer`, the first stone is thrown by the non-hammer team, then alternately. Lines with an explicit `R`/`Y` are followed; the next omitted line is thrown by "the team with fewer stones thrown".
-2. **Hammer**: `LSFE` → after each `Score`, the team that did not score. A blank (0-0) keeps it. Ends with `X` do not change it.
+2. **Hammer**: `LSFE` → after each `Score`, the team that did not score. After a blank (0-0) it follows `blank` in `Rules` (§6.2). By default the four-player game keeps it. In mixed doubles, the team that delivered the first stone of the blank end decides the placement of the positioned stones in the next end (R17(g)III) and normally uses that to take the hammer, so the hammer is treated as passing to the other team (a blank caused by an equal measure leaves the decision, and so the hammer, unchanged). Ends with `X` do not change it. A written `hammer=` always wins.
 3. **Thrower**: in the four-player game, `Stones` divided by the number of `Players`, in order; when it does not divide evenly, earlier players throw more (two each for four players; 3, 3 and 2 for three). Mixed doubles: 1-2-2-2-1 (the first player throws stones 1 and 5). From an end with `orderR=` / `orderY=` on, that rotation (§4.1). `p=` overrides.
 4. **Percentage**: `Points × 25`. Team / player percentage = `Σpoints ÷ (4 × rated shots)`. `-` and `X` are excluded from the denominator.
-5. **Final score**: sum of `Score` lines. If it conflicts with `Result`, `Result` wins with a warning.
+5. **Final score and winner**: sum of `Score` lines. The winner is decided by the total, or, when `scoring` in `Rules` is not `stones`, by that way of scoring (§6.2). A game with `Termination "Shootout"` is decided by the distances in the `Shootout` tag (§4.6). If it conflicts with `Result`, `Result` wins with a warning.
 
 ### 6.1 Default rules by era and format
 
-Without `FGZ` / `NoTick` tags, the rules of the time are inferred from `Date` and `Format`, using **World Curling (international) adoption dates**. National and club events that differed should tag explicitly.
+Without `FGZ` / `NoTick` tags, the rules of the time are inferred from `Date` and `Format`, using **World Curling (international) adoption dates**. National, club and professional-tour events that differed should tag explicitly (professional examples in §6.3). The defaults of the `Rules` keys (§6.2) are World Curling’s rules regardless of era.
 
-**Four-player and wheelchair** (`Format` `Team` / `Wheelchair`)
+**Four-player, wheelchair and four-player mixed** (`Format` `Team` / `Wheelchair` / `Mixed`)
 
 | Period | `FGZ` | `NoTick` | Basis |
 |---|---|---|---|
@@ -360,7 +373,7 @@ Without `FGZ` / `NoTick` tags, the rules of the time are inferred from `Date` an
 
 Canadian national championships alone used **three rocks** from 1993-94 to 2001-02 (unified to four in 2002-03). Since that differs from the international basis it is not a date default; write `FGZ "3"` explicitly.
 
-**Mixed doubles** (`Format` `MixedDoubles`) uses the following regardless of era.
+**Mixed doubles and wheelchair mixed doubles** (`Format` `MixedDoubles` / `WheelchairMixedDoubles`) use the following regardless of era.
 
 | `FGZ` | `NoTick` | Basis |
 |---|---|---|
@@ -375,6 +388,84 @@ The same `FGZ` tag protects different things in the four-player game and in mixe
 - **No-tick (R7)**: before the 6th stone, moving an **opponent's** FGZ stone that touches the centre line off the line or out of the FGZ is a violation. The ruling is **the non-offending team's choice** (① remove the shooter and restore, ② leave). A stone put fully out of play falls under R6(b). **Not applied to mixed doubles or wheelchair.**
 
 PCN records the throw as it was; the player judges the outcome. A player may implement ① (restore) on a violation. When replaying a recorded game, use the recorded `@` boards as they are, without applying the judgement (the ruling of the day is already reflected; re-judging with estimated physics causes false positives). Violations preserved in a record can be marked with `x=fgz` / `x=notick` (§4.6).
+
+Events that change the protection itself (forbidding any movement within play, protecting a team's own stones as well, and so on) write it with `fgzmove` / `fgzsides` / `fgzzone` in `Rules` (§6.2).
+
+### 6.2 Declaring rules (`Rules`)
+
+A game played under rules that differ from World Curling's declares the differences with the `Rules` tag.
+
+```
+[Rules "blank=keep1 tie=shootout"]
+```
+
+- The value is a list of `key=value` pairs separated by spaces. Keys are lowercase ASCII and values contain no spaces. Order is free, and each key is written once.
+- A key that is not written takes its default (World Curling's rules; see the table below). A game without a `Rules` tag uses every default.
+- The number of ends and stones, the format, the FGZ count and no-tick are still written with the `Ends` / `Stones` / `Format` / `FGZ` / `NoTick` tags. `Rules` carries the other differences.
+
+**How readers handle it**
+
+1. **The record wins** — `Score`, `hammer=`, `@`, `Result`, `Termination` and `Shootout` take precedence over `Rules`. `Rules` is used to derive omitted values (the hammer, the winner), to check the record (the points counted from the board against `Score`), and for the player's own judgements (automatic detection of violations, for example).
+2. **Unknown keys and values are kept and ignored** — reading does not stop; the user is told that there is a rule the reader does not know (a warning). When writing, unknown keys are kept as they are.
+3. **Writers make the record explicit** — in a game where the hammer or the winner moves under non-default rules, write `hammer=` on every end, together with `Result` and `Termination`, so that a reader that does not know `Rules` still reads the record correctly.
+
+**Keys**
+
+| Key | Values | Default | Meaning |
+|---|---|---|---|
+| `blank` | `keep` / `switch` / `keep<N>` | `keep` for four-player games, `switch` for mixed doubles | The hammer after a blank end (0-0). `keep` = kept. `switch` = passes to the other team (in mixed doubles, the decision on the positioned stones passes; §6, rule 2). `keep<N>` = each team keeps the hammer on its first N blank ends of the game (extra ends included), and loses it from the N+1th |
+| `tie` | `extra` / `extra<N>` / `shootout` / `draw`, joined with `+` | `extra` | How a game tied after the scheduled ends is decided, in the order the methods apply. `extra` = extra ends until decided. `extra<N>` = up to N extra ends. `shootout` = a shootout (§4.6). `draw` = the game ends as a draw. Example `extra1+shootout` = one extra end, then a shootout if still tied |
+| `scoring` | `stones` / `ends` / `skins` | `stones` | How the winner is counted. `stones` = total score. `ends` = number of ends won (match play). `skins` = total value of the skins won. What it takes to "win" an end is `win` |
+| `win` | integer, 1 or more | `1` | With `scoring` `ends` / `skins`: the points the team with the hammer needs to win the end (the skin). The team without the hammer wins it by scoring at all (a steal). An end where neither happens is a "push", won by nobody |
+| `skins` | value of each end, `,`-separated | none | Skin values for `scoring=skins`. Ends beyond the list (extra ends) use the last value. A skin nobody wins carries over to the next end, and the team that next wins a skin also takes the carried value |
+| `pin` | `<points>@<ends>` | none | In the given ends, a counting stone that covers the pin (the hole at the centre of the tee) counts as `<points>` (normally 1). `<ends>` is `last` (the final scheduled end), `all`, or end numbers, `,`-separated. Example `pin=2@last` |
+| `fgzmove` | `out` / `any` | `out` | What is forbidden for a stone the FGZ protects. `out` = putting it out of play (R6, R17(e)). `any` = moving it at all (moving it within play is also a violation) |
+| `fgzsides` | `opp` / `all` | `opp` for four-player games, `all` for mixed doubles | Which stones are protected. `opp` = the opponent's (R6). `all` = both teams' stones already delivered and the positioned stones (R17(e)) |
+| `fgzzone` | `fgz` / `play` | `fgz` for four-player games, `play` for mixed doubles | Where a protected stone must be. `fgz` = the free guard zone (between the tee line and the hog line of the playing end, house excluded). `play` = anywhere in play (R17(e)) |
+| `notickends` | `all` / `last` / end numbers, `,`-separated | `all` | The ends in which `NoTick` applies. `last` = the final scheduled end and extra ends |
+| `timeout` | `forfeit` / `stop` | `forfeit` | When a team uses up its thinking time. `forfeit` = it loses the game (`Termination "Forfeit"`). `stop` = it may not deliver any more stones (stones not thrown are task `-` with `x=time`; §4.6), and the other team keeps throwing its remaining stones |
+
+**Scoring and the winner** (`scoring`, `win`, `skins`, `pin`)
+
+- Whatever the way of scoring, a `Score` line holds **the points counted in that end** (including any `pin` bonus; §4.1).
+- With `scoring=ends` / `skins`, the winner is derived from `Score` and the hammer of each end. If the team with the hammer scores at least `win` points, it wins the end (the skin); if the team without the hammer scores, it wins the end (the skin).
+- `Result` holds the result in the game's own way of scoring (`stones`: total score; `ends`: ends won; `skins`: total value of the skins won).
+
+**Adding keys**
+
+Rules keep changing from event to event, league to league and year to year. New rules are taken in by adding keys to this table. The meaning of an existing key is never changed (a changed meaning gets a new key). When you meet a rule the keys cannot express, write it in a `; comment` first and propose a new key.
+
+### 6.3 Rule variations by event
+
+Some professional tours and leagues play under rules that differ from World Curling's. With the keys of §6.2 they are written as follows.
+
+- Values change by event, year and round. **Check them against the conditions of the game you are recording.** The tables show values confirmed as of October 2026.
+- Keys equal to their defaults are left out.
+- In a game where the hammer or the winner moves differently from the defaults, write `hammer=`, `Result` and `Termination`, as §6.2 ("Writers make the record explicit") says.
+
+**Grand Slam of Curling (GSOC)**
+
+| Period / event | How to write it | Notes |
+|---|---|---|
+| 2026-27 season (GSOC Invitational) | `[Ends "8"]` `[FGZ "5"]` `[NoTick "true"]` `[ThinkingTime "29:00"]` `[Rules "blank=keep1 tie=shootout"]` | Shootouts in the round robin, tiebreakers and quarterfinals; extra ends in the semifinals and final (leave `tie` out). Two 60-second timeouts |
+| 2025-26 season | `[Ends "8"]` and `[Rules "blank=keep1 tie=shootout"]`, and so on | Shootouts began in the round robin at the Masters, were extended to the playoffs at the Tour Challenge and Tahoe, and gave way to extra ends again for tiebreakers and playoffs at the Canadian Open and the Players' Championship. The blank-end limit started at the Tour Challenge. Check `tie` for each event and round |
+| about 2014–2018 | write `[FGZ "5"]` explicitly | The five-rock rule was used before World Curling adopted it. The date default (§6.1) would give 4 |
+| 2019 Champions Cup | `[NoTick "true"]` `[Rules "notickends=last"]` | No-tick was trialled in the eighth end and extra ends only |
+| Elite 10 (about 2015–2019; match play) | `[Ends "8"]` `[FGZ "5"]` `[NoTick "true"]` `[ThinkingTime "4:00/end"]` `[Rules "scoring=ends win=2 blank=switch tie=shootout"]` | Decided by ends won. The hammer team wins an end with two or more, the other team with a steal; otherwise it is a push and the hammer passes |
+
+**Rock League (2026, its first season)**
+
+| Game | How to write it | Notes |
+|---|---|---|
+| Four-player (men's, women's) | `[Ends "7"]` `[FGZ "5"]` `[ThinkingTime "21:00"]` `[Rules "fgzmove=any fgzsides=all blank=keep1 tie=shootout pin=2@last timeout=stop"]` | No stone of either team in the FGZ may be moved through the 5th stone (they may be moved from the 6th). In the final end, a stone covering the pin counts two. Running out of time does not lose the game but stops the team throwing. Three 60-second timeouts |
+| Mixed doubles | `[Format "MixedDoubles"]` `[Ends "8"]` `[ThinkingTime "23:00"]` `[Rules "fgzmove=any fgzzone=fgz tie=shootout pin=2@last timeout=stop"]` | No stone in the FGZ may be moved through the 3rd stone (from the 4th they may; `FGZ` keeps its default `3`). A blank end loses the hammer (the default `switch`) |
+| Four-player mixed (Mixed Fours) | `[Format "Mixed"]` with the same `Rules` as four-player games | Men and women throw alternately |
+
+In a shootout, any player on the ice may throw; the team that would have had the hammer in an extra end chooses the order, and if it is still tied the same players throw again without sweeping. The 2027 rules had not been published as of October 2026.
+
+**Skins** (skins games, such as at the Continental Cup)
+
+Write `[Rules "scoring=skins win=2 skins=…"]`. Skin values and the handling of extra ends differ by event and year, so list each end's value in `skins` (e.g. `skins=1,1,2,2,3,3,4,4` — an illustration, not the values of a real event).
 
 ## 7. JSON representation (PCN-JSON)
 
@@ -403,6 +494,7 @@ For program-to-program exchange, a JSON form maps one-to-one to the text.
 - An end may carry `powerplay` (`"R"` / `"Y"` / `null`) and `clockR` / `clockY` (strings).
 - `board` is an array of `[side, x, y]`; `v` is `[x, y, vx, vy, w]`.
 - `X` in `score` is `null` (e.g. `{ "red": 2, "yellow": null }`).
+- `Rules` and `Shootout` go into `tags` as strings, like every other tag (parsing the value is up to the implementation). A shot's `x` may be `"time"`.
 
 ## 8. Grammar (EBNF)
 
@@ -424,6 +516,11 @@ points    = "0"|"1"|"2"|"3"|"4" ;
 nag       = "!" | "?" ;
 kv        = key "=" value ;                                (* value contains no whitespace *)
 comment   = ";" { any } ;
+
+(* inside tag values *)
+rules     = kv { WS kv } ;                                 (* [Rules "…"]; keys are lowercase ASCII. §6.2 *)
+shootout  = sotry { ";" WS sotry } ;                       (* [Shootout "…"], in throwing order *)
+sotry     = side WS number [ WS "(" name ")" ] ;          (* distance in cm; 0 = covering the pin, 199.6 = outside the house *)
 ```
 
 A `; comment` may end any line. Case is significant.
@@ -471,6 +568,7 @@ End 3 hammer=R
 5. Show generated or fitted throws as estimates in the UI (e.g. with `≈`).
 6. **Do not apply rule-violation judgement when replaying a recorded game.** The ruling of the day is already in the record; re-judging with estimated physics causes false positives (§6.1).
 7. When reading a live record, treat a final end without `Score` as in progress and expect lines to be appended.
+8. Unknown keys or values in `Rules` do not stop reading. Use the record (`Score`, `hammer=`, `@`, `Result`, `Termination`, `Shootout`) as it is, and tell the user that there is a rule the reader does not know (§6.2).
 
 ## 11. Sources
 
@@ -478,10 +576,12 @@ Primary material this specification follows. The specification is unofficial and
 
 | Content | Source |
 |---|---|
-| Rules of play (score of a conceded end = R12(i), FGZ = R6, no-tick = R7, mixed doubles = R17, wheelchair = R14) | *The Rules of Curling and Rules of Competition*, World Curling, 1 September 2026 ([list](https://worldcurling.org/rules/) / [PDF](https://worldcurling.org/wp-content/uploads/2026/08/Rules2026.pdf)) |
+| Rules of play (score of a conceded end = R12(i), FGZ = R6, no-tick = R7, mixed doubles = R17, wheelchair = R14) | *The Rules of Curling and Rules of Competition*, World Curling, 1 September 2026 ([list](https://worldcurling.org/rules/) / [PDF](https://worldcurling.org/wp-content/uploads/2026/10/Rules-2026_Clean.pdf)) |
 | Definitions of Task, Handle and Points | *Curling Statistics: How to Score*, © World Curling and CURLIT Ltd., 2025 ([PDF](https://curlit.com/powerpoint/StatsTraining_2025_2026.pdf)) |
 | Source data for layers ② and ③ (Shot by Shot, diagrams) | World Curling Live Scores (`livescores.worldcurling.org`) / CURLIT Results Books (`curlit.com`) |
 | History of the FGZ and national adoption dates | Curling Canada "History of Curling"; World Curling announcements (five-rock decision at the September 2017 Congress, 2022 no-tick trial) |
+| Grand Slam of Curling rule variations (§6.3) | The "Eight Ends" column on thegrandslamofcurling.com ([2026 GSOC Co-op Invitational](https://www.thegrandslamofcurling.com/news/eight-ends-everything-you-need-to-know-for-the-2026-gsoc-co-op-invitational), [stats from the rule changes](https://www.thegrandslamofcurling.com/news/eight-ends-intriguing-stats-from-gsocs-rule-changes)), [match play rules](https://thegrandslamofcurling.com/match-play-rules), TSN "Grand Slam of Curling continues to tweak shootout, extra end experiment" (December 2025) |
+| Rock League rule variations (§6.3) | Rock League "[Format](https://rockleague.com/format)" (2026 rules), "[Eight Ends: The lowdown on Rock League's format and rules](https://rockleague.com/posts/eight-ends-the-lowdown-on-rock-leagues-format-and-rules)" |
 
 Rule excerpts (1 September 2026 edition, paraphrased):
 
@@ -489,6 +589,7 @@ Rule excerpts (1 September 2026 edition, paraphrased):
 - **R7** — before the 6th stone, if an opponent's FGZ stone touching the centre line is moved off the line or out of the FGZ, the non-offending team chooses between "remove and restore" and "leave". **Not applied to wheelchair or mixed doubles.**
 - **R17(e)** — before the 4th stone, if a delivered stone directly or indirectly moves **any delivered or pre-positioned stone** out of play, the delivered stone is removed and the moved stones are returned.
 - **R17(c)(d)** — eight ends per game, five stones per team per end. The player who throws the first stone also throws the last; the other throws stones 2–4.
+- **R17(g)III** — if neither team scores in an end, the team that delivered the first stone in that end has the decision on placement in the next end. After a blank end caused by an equal measure, the decision does not change.
 
 ## 12. Change log
 
@@ -496,6 +597,7 @@ The `[PCN "1.0"]` value in files names the format family and is not revised whil
 
 | Document | Date |
 |---|---|
+| Draft, 7th revision | 2026-10-16 (the `Rules` tag for declaring rule variations [§6.2] and how particular events are written [§6.3: the Grand Slam of Curling, Rock League, skins]; shootouts [`Termination "Shootout"`, the `Shootout` tag]; `x=time` for stones not thrown after running out of time; `WheelchairMixedDoubles` and `Mixed` for `Format`; `FGZ` as an integer 0–15; per-end `ThinkingTime`; the hammer after a blank end in mixed doubles written out [R17(g)III]. Existing files keep their meaning) |
 | Draft, 6th revision | 2026-09-29 |
 | Draft, 5th revision (English edition added) | 2026-09-05 |
 | Draft, 4th revision | 2026-09-01 |

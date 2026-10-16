@@ -47,11 +47,13 @@ World Curling publishes every stone of the Olympics and World Championships as "
 
 Write only the layers you have. Layer 3 (positions) is the contract between implementations; layer 4 (velocities) is bound to one physics engine and is always paired with an `[Engine]` tag. A reader with a different engine ignores `v=` and refits the throw from the positions.
 
+Rules follow World Curling's *Rules of Curling* by default. Variations used by professional tours and leagues, such as the Grand Slam of Curling and Rock League (a limit on blank ends, shootouts, a two-point pin, and so on), are declared with a `[Rules "…"]` tag; the record itself always wins.
+
 Shot types and ratings follow the World Curling / CURLIT statisticians' manual *Curling Statistics: How to Score*. Rotation is written `>` (clockwise, curls right) and `<` (counter-clockwise, curls left) instead of in-turn / out-turn, so the meaning does not depend on the thrower's handedness.
 
 ## Status
 
-PCN 1.0 is a **draft** (6th revision, 2026-09-29). The `[PCN "1.0"]` value names the format family and will not change while the document is a draft; the document itself is versioned by revision (see [CHANGELOG](CHANGELOG.md)). The Japanese text is normative; where the English edition differs, the Japanese edition prevails.
+PCN 1.0 is a **draft** (7th revision, 2026-10-16). The `[PCN "1.0"]` value names the format family and will not change while the document is a draft; the document itself is versioned by revision (see [CHANGELOG](CHANGELOG.md)). The Japanese text is normative; where the English edition differs, the Japanese edition prevails.
 
 This is an unofficial document with no affiliation to World Curling or CURLIT. Where its reading of the rules differs from *The Rules of Curling* (World Curling, 1 September 2026), the original prevails.
 
@@ -66,6 +68,8 @@ This is an unofficial document with no affiliation to World Curling or CURLIT. W
 | [`05-irregular.pcn`](examples/05-irregular.pcn) | A FGZ violation with `x=fgz`, a game stopped on the time limit, `Score X` |
 | [`06-scenario.pcn`](examples/06-scenario.pcn) | A mid-end position cut out as a study (`thrown=`, `score=`) |
 | [`07-anim.pcn`](examples/07-anim.pcn) | The reserved `Anim` keyframe extension |
+| [`08-shootout.pcn`](examples/08-shootout.pcn) | Grand Slam-style rules: `[Rules "blank=keep1 tie=shootout"]`, a second blank that passes the hammer, a game decided by `Termination "Shootout"` and the `Shootout` tag |
+| [`09-rock-league.pcn`](examples/09-rock-league.pcn) | Rock League-style rules: seven ends, `fgzmove=any`, a two-point pin in the final end (`pin=2@last`), a stone not thrown after running out of time (`- x=time`) |
 | [`og2018-women-bronze-gbr-jpn.pcn`](examples/og2018-women-bronze-gbr-jpn.pcn) | A real game with all four layers: the PyeongChang 2018 bronze medal game, converted from the World Curling Shot by Shot PDF and adjusted against video (`Curation "verified"`). Replay it in [CurlFlux](https://curlflux.creco.net/?replay=og2018-women-bronze-gbr-jpn&lang=en). |
 
 The synthetic examples use fictional scores and positions; they exist to show the syntax.

@@ -1,0 +1,51 @@
+; Rule variations of the Rock League kind (spec §6.2, §6.3): seven ends; no stone of either team in the
+; free guard zone may be moved through the 5th stone; in the final end a stone covering the pin counts two;
+; a team that runs out of thinking time does not lose but may not throw again. Everything is fictional.
+[PCN "1.0"]
+[Event "Example League"]
+[Date "2026.??.??"]
+[Red "Red"]
+[Yellow "Yellow"]
+[Ends "7"]
+[FGZ "5"]
+[ThinkingTime "21:00"]
+[Rules "fgzmove=any fgzsides=all blank=keep1 tie=shootout pin=2@last timeout=stop"]
+[LSFE "Yellow"]
+[Result "4-6"]
+
+End 1 hammer=Y
+Score 0-2
+
+End 2 hammer=R
+Score 1-0
+
+End 3 hammer=Y
+Score 0-0 ; yellow's first blank: yellow keeps the hammer
+
+End 4 hammer=Y
+Score 0-1
+
+End 5 hammer=R
+Score 2-0
+
+End 6 hammer=Y
+Score 1-0 ; red steals one
+
+End 7 hammer=Y
+1 R F>3
+2 Y F<4
+3 R D>2
+4 Y D<3
+5 R G>4
+6 Y W<2
+7 R D>3
+8 Y T<4
+9 R D<1
+10 Y D>4
+11 R T>2
+12 Y G<3
+13 R D>2 ; red's thinking time runs out after this stone
+14 Y D<3
+15 R - x=time ; red may not throw its last stone (timeout=stop); the board does not change
+16 Y D>4 ; stops covering the pin; yellow also has a second counting stone
+Score 0-3 ; the pin stone counts two in the final end (pin=2@last), the other yellow stone one

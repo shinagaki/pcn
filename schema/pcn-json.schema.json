@@ -9,7 +9,7 @@
     "pcn": { "type": "string", "const": "1.0" },
     "tags": {
       "type": "object",
-      "description": "Header tags. Unknown keys are preserved.",
+      "description": "Header tags as strings, including Rules (\"key=value ...\", spec §6.2) and Shootout. Unknown keys are preserved.",
       "required": ["Red", "Yellow"],
       "additionalProperties": { "type": "string" }
     },
@@ -51,7 +51,7 @@
           "maxItems": 5
         },
         "est": { "type": "boolean", "description": "true when v was reconstructed rather than measured" },
-        "x": { "type": ["string", "null"], "enum": ["fgz", "notick", "hog", "burn", "reposition", "wrong", null] },
+        "x": { "type": ["string", "null"], "enum": ["fgz", "notick", "hog", "burn", "reposition", "wrong", "time", null] },
         "comment": { "type": "string" },
         "extra": { "type": "object", "description": "Unknown key=value fields, preserved", "additionalProperties": { "type": "string" } }
       }

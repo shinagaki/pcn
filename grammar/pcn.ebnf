@@ -17,4 +17,9 @@ nag       = "!" | "?" ;
 kv        = key "=" value ;                                (* value に空白は含まない *)
 comment   = ";" { any } ;
 
+(* タグの値の中の書き方 *)
+rules     = kv { WS kv } ;                                 (* [Rules "…"]。key は英小文字。§6.2 *)
+shootout  = sotry { ";" WS sotry } ;                       (* [Shootout "…"]。投げた順 *)
+sotry     = side WS number [ WS "(" name ")" ] ;          (* 距離 cm。0 = ピンを覆う、199.6 = ハウスの外 *)
+
 行末の `; コメント` はどの行にも付けられます。大文字小文字は区別します。
